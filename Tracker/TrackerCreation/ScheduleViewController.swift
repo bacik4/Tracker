@@ -7,6 +7,12 @@
 import UIKit
 
 final class ScheduleViewController: UIViewController {
+    // MARK: - Public Properties
+    
+    var onScheduleSelected: ((Set<WeekDay>) -> Void)?
+    
+    // MARK: - Private Properties
+    
     private let tableView = UITableView()
     private let cellIdentifier = "DayCell"
     
@@ -31,9 +37,9 @@ final class ScheduleViewController: UIViewController {
         return button
     }()
     
-    var onScheduleSelected: ((Set<WeekDay>) -> Void)?
-    
     private var selectedWeekDays: Set<WeekDay>
+    
+    // MARK: - Initializers
     
     init(selectedWeekDays: Set<WeekDay> = []) {
         self.selectedWeekDays = selectedWeekDays
@@ -44,6 +50,8 @@ final class ScheduleViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -52,6 +60,8 @@ final class ScheduleViewController: UIViewController {
         setupTableView()
         setupDoneButton()
     }
+    
+    // MARK: - Private Methods
     
     private func setupNavBar() {
         title = "Расписание"
@@ -88,16 +98,6 @@ final class ScheduleViewController: UIViewController {
         ])
     }
     
-    @objc private func didSwitchChanged(_ sender: UISwitch) {
-        let weekDay = weekDays[sender.tag].weekDay
-        
-        if sender.isOn {
-            selectedWeekDays.insert(weekDay)
-        } else {
-            selectedWeekDays.remove(weekDay)
-        }
-    }
-    
     private func setupDoneButton() {
         view.addSubview(doneButton)
         
@@ -115,11 +115,25 @@ final class ScheduleViewController: UIViewController {
         ])
     }
     
+    // MARK: - Actions
+    
+    @objc private func didSwitchChanged(_ sender: UISwitch) {
+        let weekDay = weekDays[sender.tag].weekDay
+        
+        if sender.isOn {
+            selectedWeekDays.insert(weekDay)
+        } else {
+            selectedWeekDays.remove(weekDay)
+        }
+    }
+    
     @objc private func didTapDoneButton() {
         onScheduleSelected?(selectedWeekDays)
         dismiss(animated: true)
     }
 }
+
+// MARK: - UITableViewDataSource, UITableViewDelegate
 
 extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

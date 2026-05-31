@@ -7,6 +7,12 @@
 import UIKit
 
 final class HabitCreationViewController: UIViewController {
+    // MARK: - Public Properties
+    
+    var onCreateTracker: ((Tracker) -> Void)?
+    
+    // MARK: - Private Properties
+    
     private let textField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Введите название трекера"
@@ -62,8 +68,6 @@ final class HabitCreationViewController: UIViewController {
     private let cellIdentifier = "HabitCreationCell"
     private let tableItems = ["Категория", "Расписание"]
     
-    var onCreateTracker: ((Tracker) -> Void)?
-    
     private var selectedSchedule: Set<WeekDay> = [] {
         didSet {
             updateCreateButtonState()
@@ -73,6 +77,8 @@ final class HabitCreationViewController: UIViewController {
             )
         }
     }
+    
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -84,6 +90,8 @@ final class HabitCreationViewController: UIViewController {
         setupTableView()
         setupButtons()
     }
+    
+    // MARK: - Private Methods
     
     private func setupNavBar() {
         title = "Новая привычка"
@@ -160,6 +168,25 @@ final class HabitCreationViewController: UIViewController {
         ])
     }
     
+    private func scheduleText() -> String {
+        let orderedDays: [WeekDay] = [
+            .monday,
+            .tuesday,
+            .wednesday,
+            .thursday,
+            .friday,
+            .saturday,
+            .sunday
+        ]
+        
+        return orderedDays
+            .filter { selectedSchedule.contains($0) }
+            .map { $0.shortTitle }
+            .joined(separator: ", ")
+    }
+    
+    // MARK: - Actions
+    
     @objc private func didTapCancelButton() {
         dismiss(animated: true)
     }
@@ -195,24 +222,9 @@ final class HabitCreationViewController: UIViewController {
         createButton.isEnabled = canCreate
         createButton.backgroundColor = canCreate ? .black : .systemGray
     }
-    
-    private func scheduleText() -> String {
-        let orderedDays: [WeekDay] = [
-            .monday,
-            .tuesday,
-            .wednesday,
-            .thursday,
-            .friday,
-            .saturday,
-            .sunday
-        ]
-        
-        return orderedDays
-            .filter { selectedSchedule.contains($0) }
-            .map { $0.shortTitle }
-            .joined(separator: ", ")
-    }
 }
+
+// MARK: - UITableViewDataSource, UITableViewDelegate
 
 extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

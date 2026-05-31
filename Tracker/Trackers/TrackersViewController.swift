@@ -12,7 +12,7 @@ final class TrackersViewController: UIViewController {
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
     
-    // MARK: - Properties
+    // MARK: - Private Properties
 
     private let searchController = UISearchController()
     private let cellIdentifier = "cell"
