@@ -74,7 +74,6 @@ final class HabitCreationViewController: UIViewController {
         }
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -119,8 +118,6 @@ final class HabitCreationViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
         tableView.delegate = self
-        
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
         
         tableView.backgroundColor = .systemGray6
         tableView.layer.cornerRadius = 16
@@ -198,6 +195,23 @@ final class HabitCreationViewController: UIViewController {
         createButton.isEnabled = canCreate
         createButton.backgroundColor = canCreate ? .black : .systemGray
     }
+    
+    private func scheduleText() -> String {
+        let orderedDays: [WeekDay] = [
+            .monday,
+            .tuesday,
+            .wednesday,
+            .thursday,
+            .friday,
+            .saturday,
+            .sunday
+        ]
+        
+        return orderedDays
+            .filter { selectedSchedule.contains($0) }
+            .map { $0.shortTitle }
+            .joined(separator: ", ")
+    }
 }
 
 extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegate {
@@ -206,14 +220,25 @@ extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegat
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier,for: indexPath)
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: cellIdentifier)
         
         cell.textLabel?.text = tableItems[indexPath.row]
         cell.textLabel?.font = .systemFont(ofSize: 17)
         cell.textLabel?.textColor = .black
+        
+        cell.detailTextLabel?.font = .systemFont(ofSize: 17)
+        cell.detailTextLabel?.textColor = .systemGray
+        
         cell.backgroundColor = .systemGray6
         cell.accessoryType = .disclosureIndicator
         cell.selectionStyle = .none
+        
+        if indexPath.row == 1 {
+            let text = scheduleText()
+            cell.detailTextLabel?.text = text.isEmpty ? nil : text
+        } else {
+            cell.detailTextLabel?.text = nil
+        }
         
         return cell
     }

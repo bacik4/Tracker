@@ -7,11 +7,15 @@
 import UIKit
 
 final class TrackersViewController: UIViewController {
-    private let searchController = UISearchController()
-    private let cellIdentifier = "cell"
+    // MARK: - Public Properties
     
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
+    
+    // MARK: - Properties
+
+    private let searchController = UISearchController()
+    private let cellIdentifier = "cell"
     
     private var currentDate = Date()
     private var visibleCategories: [TrackerCategory] = []
@@ -51,19 +55,23 @@ final class TrackersViewController: UIViewController {
         return datePicker
     }()
     
-    var collectionView: UICollectionView = {
+    private var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collectionView
     }()
     
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavBar()
-        setupCollectonView()
+        setupCollectionView()
         setupBack()
         updateVisibleCategories()
     }
+    
+    // MARK: - Setup
     
     private func setupNavBar() {
         title = "Трекеры"
@@ -106,7 +114,7 @@ final class TrackersViewController: UIViewController {
         ])
     }
     
-    private func setupCollectonView() {
+    private func setupCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
         
@@ -122,6 +130,8 @@ final class TrackersViewController: UIViewController {
         
         collectionView.register(TrackerCell.self, forCellWithReuseIdentifier: cellIdentifier)
     }
+    
+    // MARK: - Actions
     
     @objc private func didTapAddButton() {
         let habitCreationViewController = HabitCreationViewController()
@@ -170,6 +180,8 @@ final class TrackersViewController: UIViewController {
         
         collectionView.reloadData()
     }
+    
+    // MARK: - Completion Logic
     
     private func isTrackerCompleted(_ tracker: Tracker, on date: Date) -> Bool {
         completedTrackers.contains { record in
@@ -241,6 +253,8 @@ final class TrackersViewController: UIViewController {
     }
 }
 
+// MARK: - UICollectionViewDataSource, UICollectionViewDelegate
+
 extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         visibleCategories.count
@@ -251,7 +265,12 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as? TrackerCell
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: cellIdentifier,
+            for: indexPath
+        ) as? TrackerCell else {
+            return UICollectionViewCell()
+        }
         
         let tracker = visibleCategories[indexPath.section].trackers[indexPath.item]
         
@@ -261,22 +280,31 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
             record.trackerId == tracker.id
         }.count
         
-        cell?.configure(
+        cell.configure(
             with: tracker,
             isCompleted: isCompleted,
             completedDays: completedDays
         )
         
-        cell?.onButtonTap = { [weak self] in
+        cell.onButtonTap = { [weak self] in
             guard let self else { return }
             
             self.toggleTrackerCompletion(tracker, on: self.currentDate)
-            self.collectionView.reloadItems(at: [indexPath])
+            
+            let isCompleted = self.isTrackerCompleted(tracker, on: self.currentDate)
+            let completedDays = self.completedTrackers.filter { $0.trackerId == tracker.id }.count
+            
+            cell.updateCompletion(
+                isCompleted: isCompleted,
+                completedDays: completedDays
+            )
         }
         
-        return cell!
+        return cell
     }
 }
+
+// MARK: - UICollectionViewDelegateFlowLayout
 
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(
@@ -284,13 +312,42 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        return CGSize(width: 167, height: 148)
+        let leftInset: CGFloat = 16
+        let rightInset: CGFloat = 16
+        let spacingBetweenCells: CGFloat = 9
+        
+        let availableWidth = collectionView.bounds.width - leftInset - rightInset - spacingBetweenCells
+        let cellWidth = availableWidth / 2
+        
+        return CGSize(width: cellWidth, height: 148)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 7
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumInteritemSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        return 9
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumLineSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        return 16
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 24, left: 16, bottom: 16, right: 16)
     }
 }
+
+// MARK: - UISearchResultsUpdating
 
 extension TrackersViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {

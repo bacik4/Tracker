@@ -8,16 +8,20 @@
 import UIKit
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        setupWindow()
+        // Override point for customization after application launch.
+        return true
+    }
+    
+    private func setupWindow() {
         window = UIWindow()
         window?.rootViewController = TabBarController()
         window?.makeKeyAndVisible()
-        // Override point for customization after application launch.
-        return true
     }
 
     // MARK: UISceneSession Lifecycle

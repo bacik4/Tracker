@@ -4,17 +4,22 @@
 //
 //  Created by Игорь Глебов on 30.05.2026.
 //
-import Foundation
 import UIKit
 
 final class TrackerCell: UICollectionViewCell {
-    let button = UIButton()
-    let label = UILabel()
-    let emoji = UILabel()
-    let daysLabel = UILabel()
-    let colorView = UIView()
+    // MARK: - Public Properties
     
     var onButtonTap: (() -> Void)?
+    
+    // MARK: - Private Properties
+    
+    private let button = UIButton()
+    private let label = UILabel()
+    private let emoji = UILabel()
+    private let daysLabel = UILabel()
+    private let colorView = UIView()
+    
+    // MARK: - Initializers
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,7 +31,15 @@ final class TrackerCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Private Methods
+    
     private func setupUI() {
+        setupViews()
+        setupLayout()
+        setupActions()
+    }
+    
+    private func setupViews() {
         contentView.backgroundColor = .white
         
         colorView.layer.cornerRadius = 16
@@ -42,27 +55,28 @@ final class TrackerCell: UICollectionViewCell {
         emoji.layer.cornerRadius = 12
         emoji.layer.masksToBounds = true
         
-        button.setTitle("+", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 24, weight: .medium)
-        button.backgroundColor = .white
+        button.setImage(UIImage(systemName: "plus"), for: .normal)
+        button.tintColor = .white
+        button.contentHorizontalAlignment = .center
+        button.contentVerticalAlignment = .center
+        button.imageView?.contentMode = .scaleAspectFit
         button.layer.cornerRadius = 17
-        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
+        button.layer.masksToBounds = true
         
         daysLabel.font = .systemFont(ofSize: 12, weight: .medium)
         daysLabel.textColor = .black
-        
+    }
+    
+    private func setupLayout() {
         contentView.addSubview(colorView)
         colorView.addSubview(label)
         colorView.addSubview(emoji)
         contentView.addSubview(button)
         contentView.addSubview(daysLabel)
         
-        colorView.translatesAutoresizingMaskIntoConstraints = false
-        emoji.translatesAutoresizingMaskIntoConstraints = false
-        label.translatesAutoresizingMaskIntoConstraints = false
-        button.translatesAutoresizingMaskIntoConstraints = false
-        daysLabel.translatesAutoresizingMaskIntoConstraints = false
+        [colorView, emoji, label, button, daysLabel].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
         
         NSLayoutConstraint.activate([
             colorView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -89,23 +103,40 @@ final class TrackerCell: UICollectionViewCell {
         ])
     }
     
+    private func setupActions() {
+        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
+    }
+    
+    // MARK: - Actions
+    
     @objc private func didTapButton() {
         onButtonTap?()
     }
+    
+    // MARK: - Reuse
     
     override func prepareForReuse() {
         super.prepareForReuse()
         onButtonTap = nil
     }
     
+    // MARK: - Configuration
+    
     func configure(with tracker: Tracker, isCompleted: Bool, completedDays: Int) {
         label.text = tracker.title
         emoji.text = tracker.emoji
         colorView.backgroundColor = tracker.colour
         button.backgroundColor = tracker.colour
+        
+        updateCompletion(isCompleted: isCompleted, completedDays: completedDays)
+    }
+    
+    func updateCompletion(isCompleted: Bool, completedDays: Int) {
         daysLabel.text = "\(completedDays) дней"
         
-        button.setTitle(isCompleted ? "✓" : "+", for: .normal)
+        let imageName = isCompleted ? "checkmark" : "plus"
+        button.setImage(UIImage(systemName: imageName), for: .normal)
+        
         button.alpha = isCompleted ? 0.3 : 1
     }
 }

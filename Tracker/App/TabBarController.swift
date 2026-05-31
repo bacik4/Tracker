@@ -8,10 +8,17 @@
 import UIKit
 
 final class TabBarController: UITabBarController {
-
+    
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        setupViewControllers()
+    }
+    
+    // MARK: - Private Methods
+    
+    private func setupViewControllers() {
         let trackersViewController = TrackersViewController()
         let statisticsViewController = StatisticsViewController()
         
@@ -23,19 +30,28 @@ final class TabBarController: UITabBarController {
             rootViewController: statisticsViewController
         )
         
-        trackersNavigationController.tabBarItem = UITabBarItem(
+        trackersNavigationController.tabBarItem = makeTabBarItem(
             title: "Трекеры",
-            image: UIImage(systemName: "record.circle.fill"),
-            selectedImage: nil
+            imageName: "record.circle.fill",
         )
         
-        statisticsNavigationController.tabBarItem = UITabBarItem(
+        statisticsNavigationController.tabBarItem = makeTabBarItem(
             title: "Статистика",
-            image: UIImage(systemName: "hare.fill"),
-            selectedImage: nil
+            imageName: "hare.fill",
         )
         
         viewControllers = [trackersNavigationController, statisticsNavigationController]
+    }
+    
+    private func makeTabBarItem(
+        title: String,
+        imageName: String
+    ) -> UITabBarItem {
+        UITabBarItem(
+            title: title,
+            image: UIImage(systemName: imageName),
+            selectedImage: nil
+        )
     }
 }
 
