@@ -34,7 +34,7 @@ enum TrackerRecordStoreError: Error {
 final class TrackerRecordStore: NSObject {
     // MARK: - Private Properties
     private let context: NSManagedObjectContext
-    private var fetchedResultsController: NSFetchedResultsController<TrackerRecordCoreData>!
+    private let fetchedResultsController: NSFetchedResultsController<TrackerRecordCoreData>
     
     private var insertedIndexes: IndexSet?
     private var deletedIndexes: IndexSet?
@@ -58,8 +58,30 @@ final class TrackerRecordStore: NSObject {
     
     init(context: NSManagedObjectContext) {
         self.context = context
+        
+        let request: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "date", ascending: true)
+        ]
+        
+        let fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        
+        self.fetchedResultsController = fetchedResultsController
+        
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            assertionFailure("Failed to fetch records: \(error)")
+        }
+        
         super.init()
-        setupFetchedResultsController()
+        fetchedResultsController.delegate = self
     }
     
     // MARK: - Public Methods
@@ -148,30 +170,6 @@ final class TrackerRecordStore: NSObject {
     }
     
     // MARK: - Private Methods
-    
-    private func setupFetchedResultsController() {
-        let request: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
-        
-        request.sortDescriptors = [
-            NSSortDescriptor(key: "date", ascending: true)
-        ]
-        
-        let fetchedResultsController = NSFetchedResultsController(
-            fetchRequest: request,
-            managedObjectContext: context,
-            sectionNameKeyPath: nil,
-            cacheName: nil
-        )
-        
-        fetchedResultsController.delegate = self
-        self.fetchedResultsController = fetchedResultsController
-        
-        do {
-            try fetchedResultsController.performFetch()
-        } catch {
-            assertionFailure("Failed to fetch records: \(error)")
-        }
-    }
     
     private func makeRecord(from recordCoreData: TrackerRecordCoreData) throws -> TrackerRecord {
         guard let trackerId = recordCoreData.trackerId else {

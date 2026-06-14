@@ -35,7 +35,7 @@ final class TrackerCategoryStore: NSObject {
     
     private let context: NSManagedObjectContext
     
-    private var fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData>!
+    private let fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData>
     
     private var insertedIndexes: IndexSet?
     private var deletedIndexes: IndexSet?
@@ -59,8 +59,30 @@ final class TrackerCategoryStore: NSObject {
     
     init(context: NSManagedObjectContext) {
         self.context = context
+        
+        let request = TrackerCategoryCoreData.fetchRequest()
+        
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "title", ascending: true)
+        ]
+        
+        let fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        
+        self.fetchedResultsController = fetchedResultsController
+        
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            assertionFailure("Failed to fetch categories: \(error)")
+        }
+        
         super.init()
-        setupFetchedResultsController()
+        fetchedResultsController.delegate = self
     }
     
     // MARK: - Public Methods
@@ -97,30 +119,6 @@ final class TrackerCategoryStore: NSObject {
     }
     
     // MARK: - Private Methods
-    
-    private func setupFetchedResultsController() {
-        let request = TrackerCategoryCoreData.fetchRequest()
-        
-        request.sortDescriptors = [
-            NSSortDescriptor(key: "title", ascending: true)
-        ]
-        
-        let fetchedResultsController = NSFetchedResultsController(
-            fetchRequest: request,
-            managedObjectContext: context,
-            sectionNameKeyPath: nil,
-            cacheName: nil
-        )
-        
-        fetchedResultsController.delegate = self
-        self.fetchedResultsController = fetchedResultsController
-        
-        do {
-            try fetchedResultsController.performFetch()
-        } catch {
-            assertionFailure("Failed to fetch categories: \(error)")
-        }
-    }
     
     private func makeCategory(from categoryCoreData: TrackerCategoryCoreData) throws -> TrackerCategory {
         guard let title = categoryCoreData.title else {

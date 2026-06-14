@@ -12,7 +12,7 @@ struct TrackerStoreUpdate {
         let oldIndex: Int
         let newIndex: Int
     }
-
+    
     let insertedIndexes: IndexSet
     let deletedIndexes: IndexSet
     let updatedIndexes: IndexSet
@@ -37,13 +37,13 @@ enum TrackerStoreError: Error {
 final class TrackerStore: NSObject {
     // MARK: - Private Properties
     private let context: NSManagedObjectContext
-    private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>!
-
+    private let fetchedResultsController: NSFetchedResultsController<TrackerCoreData>
+    
     private var insertedIndexes: IndexSet?
     private var deletedIndexes: IndexSet?
     private var updatedIndexes: IndexSet?
     private var movedIndexes: Set<TrackerStoreUpdate.Move>?
-
+    
     // MARK: - Public Properties
     weak var delegate: TrackerStoreDelegate?
     
@@ -57,11 +57,31 @@ final class TrackerStore: NSObject {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         self.init(context: context)
     }
-
+    
     init(context: NSManagedObjectContext) {
         self.context = context
+        
+        let request = TrackerCoreData.fetchRequest()
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "title", ascending: true)
+        ]
+        
+        self.fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        
         super.init()
-        setupFetchedResultsController()
+        
+        fetchedResultsController.delegate = self
+        
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            assertionFailure("Failed to fetch trackers: \(error)")
+        }
     }
     
     // MARK: - Public Methods
@@ -128,29 +148,6 @@ final class TrackerStore: NSObject {
         return newCategory
     }
     
-    private func setupFetchedResultsController() {
-        let request = TrackerCoreData.fetchRequest()
-        
-        request.sortDescriptors = [
-            NSSortDescriptor(key: "title", ascending: true)
-        ]
-        
-        let fetchResultController = NSFetchedResultsController(
-            fetchRequest: request,
-            managedObjectContext: context,
-            sectionNameKeyPath: nil,
-            cacheName: nil)
-        
-        fetchResultController.delegate = self
-        self.fetchedResultsController = fetchResultController
-        
-        do {
-            try fetchResultController.performFetch()
-        } catch {
-            assertionFailure("Failed to fetch trackers: \(error)")
-        }
-    }
-    
     private func makeTracker(from trackerCoreData: TrackerCoreData) throws -> Tracker {
         guard let id = trackerCoreData.id else {
             throw TrackerStoreError.decodingErrorInvalidId
@@ -210,7 +207,7 @@ extension TrackerStore: NSFetchedResultsControllerDelegate {
         updatedIndexes = IndexSet()
         movedIndexes = Set<TrackerStoreUpdate.Move>()
     }
-
+    
     func controller(
         _ controller: NSFetchedResultsController<NSFetchRequestResult>,
         didChange anObject: Any,
@@ -223,17 +220,17 @@ extension TrackerStore: NSFetchedResultsControllerDelegate {
             if let newIndexPath {
                 insertedIndexes?.insert(newIndexPath.row)
             }
-
+            
         case .delete:
             if let indexPath {
                 deletedIndexes?.insert(indexPath.row)
             }
-
+            
         case .update:
             if let indexPath {
                 updatedIndexes?.insert(indexPath.row)
             }
-
+            
         case .move:
             if let indexPath, let newIndexPath {
                 movedIndexes?.insert(
@@ -243,12 +240,12 @@ extension TrackerStore: NSFetchedResultsControllerDelegate {
                     )
                 )
             }
-
+            
         @unknown default:
             break
         }
     }
-
+    
     func controllerDidChangeContent(
         _ controller: NSFetchedResultsController<NSFetchRequestResult>
     ) {
@@ -260,16 +257,16 @@ extension TrackerStore: NSFetchedResultsControllerDelegate {
         else {
             return
         }
-
+        
         let update = TrackerStoreUpdate(
             insertedIndexes: insertedIndexes,
             deletedIndexes: deletedIndexes,
             updatedIndexes: updatedIndexes,
             movedIndexes: movedIndexes
         )
-
+        
         delegate?.store(self, didUpdate: update)
-
+        
         self.insertedIndexes = nil
         self.deletedIndexes = nil
         self.updatedIndexes = nil

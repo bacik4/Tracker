@@ -6,6 +6,18 @@
 //
 import UIKit
 
+private enum TableItem: Int, CaseIterable {
+    case category
+    case schedule
+    
+    var title: String {
+        switch self {
+        case .category: return "Категория"
+        case .schedule: return "Расписание"
+        }
+    }
+}
+
 final class HabitCreationViewController: UIViewController {
     // MARK: - Public Properties
     
@@ -66,13 +78,12 @@ final class HabitCreationViewController: UIViewController {
     
     private let tableView = UITableView()
     private let cellIdentifier = "HabitCreationCell"
-    private let tableItems = ["Категория", "Расписание"]
     
     private var selectedSchedule: Set<WeekDay> = [] {
         didSet {
             updateCreateButtonState()
             tableView.reloadRows(
-                at: [IndexPath(row: 1, section: 0)],
+                at: [IndexPath(row: TableItem.schedule.rawValue, section: 0)],
                 with: .automatic
             )
         }
@@ -140,7 +151,7 @@ final class HabitCreationViewController: UIViewController {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         return scrollView
     }()
-
+    
     private let contentView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -321,18 +332,18 @@ final class HabitCreationViewController: UIViewController {
     private func setupScrollView() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-
+        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: buttonsStackView.topAnchor, constant: -16),
-
+            
             contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-
+            
             contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
         ])
     }
@@ -368,7 +379,7 @@ final class HabitCreationViewController: UIViewController {
     @objc private func textFieldDidChange() {
         updateCreateButtonState()
     }
-
+    
     private func updateCreateButtonState() {
         let title = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let canCreate = !title.isEmpty && !selectedSchedule.isEmpty && selectedEmoji != nil && selectedColor != nil
@@ -382,13 +393,17 @@ final class HabitCreationViewController: UIViewController {
 
 extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tableItems.count
+        return TableItem.allCases.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: cellIdentifier)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier)
+        ?? UITableViewCell(style: .subtitle, reuseIdentifier: cellIdentifier)
         
-        cell.textLabel?.text = tableItems[indexPath.row]
+        guard let item = TableItem(rawValue: indexPath.row) else {
+            return UITableViewCell()
+        }
+        cell.textLabel?.text = item.title
         cell.textLabel?.font = .systemFont(ofSize: 17)
         cell.textLabel?.textColor = .black
         
@@ -399,24 +414,28 @@ extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegat
         cell.accessoryType = .disclosureIndicator
         cell.selectionStyle = .none
         
-        if indexPath.row == 1 {
+        switch item {
+        case .category:
+            cell.detailTextLabel?.text = nil
+            
+        case .schedule:
             let text = scheduleText()
             cell.detailTextLabel?.text = text.isEmpty ? nil : text
-        } else {
-            cell.detailTextLabel?.text = nil
         }
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == 0 {
-//            let categoryViewController = CategoryViewController()
-//            let navigationController = UINavigationController(rootViewController: categoryViewController)
-//            navigationController.modalPresentationStyle = .pageSheet
-//            present(navigationController, animated: true)
+        guard let item = TableItem(rawValue: indexPath.row) else {
+            return
         }
-        if  indexPath.row == 1 {
+        
+        switch item {
+        case .category:
+            break
+            
+        case .schedule:
             let scheduleViewController = ScheduleViewController(selectedWeekDays: selectedSchedule)
             
             scheduleViewController.onScheduleSelected = { [weak self] weekDays in
@@ -502,7 +521,7 @@ extension HabitCreationViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
-        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
     
