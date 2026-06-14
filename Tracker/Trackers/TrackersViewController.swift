@@ -17,6 +17,9 @@ final class TrackersViewController: UIViewController {
     private let searchController = UISearchController()
     private let cellIdentifier = "cell"
     
+    private let trackerStore = TrackerStore()
+    private let trackerRecordStore = TrackerRecordStore()
+    
     private var currentDate = Date()
     private var visibleCategories: [TrackerCategory] = []
     
@@ -65,10 +68,16 @@ final class TrackersViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        trackerStore.delegate = self
+        trackerRecordStore.delegate = self
+        
         setupNavBar()
         setupCollectionView()
         setupBack()
-        updateVisibleCategories()
+        
+        reloadCompletedTrackersFromStore()
+        reloadCategoriesFromStore()
     }
     
     // MARK: - Setup
@@ -137,7 +146,13 @@ final class TrackersViewController: UIViewController {
         let habitCreationViewController = HabitCreationViewController()
         
         habitCreationViewController.onCreateTracker = { [weak self] tracker in
-            self?.addTracker(tracker, to: "Важное")
+            guard let self else { return }
+            
+            do {
+                try self.trackerStore.addTracker(tracker, to: "Важное")
+            } catch {
+                assertionFailure("Failed to save tracker: \(error)")
+            }
         }
         
         let navigationController = UINavigationController(rootViewController: habitCreationViewController)
@@ -181,6 +196,24 @@ final class TrackersViewController: UIViewController {
         collectionView.reloadData()
     }
     
+    private func reloadCategoriesFromStore() {
+        do {
+            categories = try trackerStore.categories()
+            updateVisibleCategories()
+        } catch {
+            assertionFailure("Failed to load categories: \(error)")
+        }
+    }
+    
+    private func reloadCompletedTrackersFromStore() {
+        do {
+            completedTrackers = try trackerRecordStore.records()
+        } catch {
+            assertionFailure("Failed to load completed trackers: \(error)")
+        }
+        
+    }
+    
     // MARK: - Completion Logic
     
     private func isTrackerCompleted(_ tracker: Tracker, on date: Date) -> Bool {
@@ -190,7 +223,7 @@ final class TrackersViewController: UIViewController {
         }
     }
     
-    private func completeTracker(_ tracker: Tracker, on date: Date) {
+    private func completeTracker(_ tracker: Tracker, on date: Date) throws {
         guard !isTrackerCompleted(tracker, on: date) else { return }
         
         let trackerRecord = TrackerRecord(
@@ -198,50 +231,28 @@ final class TrackersViewController: UIViewController {
             date: date
         )
         
-        completedTrackers.append(trackerRecord)
+        try trackerRecordStore.addRecord(trackerRecord)
     }
     
-    private func uncompleteTracker(_ tracker: Tracker, on date: Date) {
-        completedTrackers.removeAll { record in
-            record.trackerId == tracker.id &&
-            Calendar.current.isDate(record.date, inSameDayAs: date)
-        }
+    private func uncompleteTracker(_ tracker: Tracker, on date: Date) throws {
+        try trackerRecordStore.deleteRecord(
+            trackerId: tracker.id,
+            on: date
+        )
     }
     
     private func toggleTrackerCompletion(_ tracker: Tracker, on date: Date) {
-        if isTrackerCompleted(tracker, on: date) {
-            uncompleteTracker(tracker, on: date)
-        } else {
-            guard !isFutureDate(date) else { return }
-            completeTracker(tracker, on: date)
+        do {
+            if isTrackerCompleted(tracker, on: date){
+                try uncompleteTracker(tracker, on: date)
+            } else {
+                guard !isFutureDate(date) else { return }
+                try completeTracker(tracker, on: date)
+            }
+            reloadCompletedTrackersFromStore()
+        } catch {
+            assertionFailure("Failed to update tracker completion: \(error)")
         }
-        
-    }
-    
-    private func addTracker(_ tracker: Tracker, to categoryTitle: String) {
-        if let categoryIndex = categories.firstIndex(where: { $0.title == categoryTitle }) {
-            let oldCategory = categories[categoryIndex]
-            
-            let newTrackers = oldCategory.trackers + [tracker]
-            
-            let newCategory = TrackerCategory(
-                title: oldCategory.title,
-                trackers: newTrackers
-            )
-            
-            var newCategories = categories
-            newCategories[categoryIndex] = newCategory
-            
-            categories = newCategories
-        } else {
-            let newCategory = TrackerCategory(
-                title: categoryTitle,
-                trackers: [tracker]
-            )
-            
-            categories = categories + [newCategory]
-        }
-        updateVisibleCategories()
     }
     
     private func isFutureDate(_ date: Date) -> Bool {
@@ -290,14 +301,6 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
             guard let self else { return }
             
             self.toggleTrackerCompletion(tracker, on: self.currentDate)
-            
-            let isCompleted = self.isTrackerCompleted(tracker, on: self.currentDate)
-            let completedDays = self.completedTrackers.filter { $0.trackerId == tracker.id }.count
-            
-            cell.updateCompletion(
-                isCompleted: isCompleted,
-                completedDays: completedDays
-            )
         }
         
         return cell
@@ -354,3 +357,26 @@ extension TrackersViewController: UISearchResultsUpdating {
         updateVisibleCategories()
     }
 }
+
+// MARK: - TrackerStoreDelegate
+extension TrackersViewController: TrackerStoreDelegate {
+    func store(
+        _ store: TrackerStore,
+        didUpdate update: TrackerStoreUpdate
+    ) {
+        reloadCategoriesFromStore()
+    }
+}
+
+// MARK: - TrackerRecordStoreDelegate
+
+extension TrackersViewController: TrackerRecordStoreDelegate {
+    func store(
+        _ store: TrackerRecordStore,
+        didUpdate update: TrackerRecordStoreUpdate
+    ) {
+        reloadCompletedTrackersFromStore()
+        collectionView.reloadData()
+    }
+}
+

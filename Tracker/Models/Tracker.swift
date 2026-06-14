@@ -9,7 +9,7 @@ import UIKit
 struct Tracker {
     let id: UUID
     let title: String
-    let colour: UIColor
+    let color: UIColor
     let emoji: String
     let schedule: Set<WeekDay>
 }

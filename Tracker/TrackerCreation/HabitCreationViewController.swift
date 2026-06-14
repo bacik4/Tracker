@@ -134,6 +134,18 @@ final class HabitCreationViewController: UIViewController {
         UIColor(hex: "#2FD058")
     ]
     
+    private let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+
+    private let contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
     // MARK: - Lifecycle
     
@@ -143,9 +155,10 @@ final class HabitCreationViewController: UIViewController {
         view.backgroundColor = .white
         
         setupNavBar()
+        setupButtons()
+        setupScrollView()
         setupTextField()
         setupTableView()
-        setupButtons()
         setupEmojiLabel()
         setupEmojiColletion()
         setupColorLabel()
@@ -167,7 +180,7 @@ final class HabitCreationViewController: UIViewController {
     }
     
     private func setupTextField() {
-        view.addSubview(textField)
+        contentView.addSubview(textField)
         
         textField.addTarget(
             self,
@@ -176,9 +189,9 @@ final class HabitCreationViewController: UIViewController {
         )
         
         NSLayoutConstraint.activate([
-            textField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-            textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            textField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            textField.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
+            textField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            textField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             textField.heightAnchor.constraint(equalToConstant: 75)
         ])
     }
@@ -196,12 +209,12 @@ final class HabitCreationViewController: UIViewController {
         tableView.isScrollEnabled = false
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         
-        view.addSubview(tableView)
+        contentView.addSubview(tableView)
         
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 24),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             tableView.heightAnchor.constraint(equalToConstant: 150)
         ])
     }
@@ -247,10 +260,10 @@ final class HabitCreationViewController: UIViewController {
     }
     
     private func setupEmojiLabel() {
-        view.addSubview(emojiLabel)
+        contentView.addSubview(emojiLabel)
         
         NSLayoutConstraint.activate([
-            emojiLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 28),
+            emojiLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
             emojiLabel.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 32),
             emojiLabel.widthAnchor.constraint(equalToConstant: 52),
         ])
@@ -262,25 +275,24 @@ final class HabitCreationViewController: UIViewController {
         emojiCollectionView.backgroundColor = .clear
         emojiCollectionView.isScrollEnabled = false
         
-        view.addSubview(emojiCollectionView)
+        contentView.addSubview(emojiCollectionView)
         emojiCollectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            //emojiCollectionView.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 0),
-            emojiCollectionView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 50),
-            emojiCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 1),
-            emojiCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            emojiCollectionView.heightAnchor.constraint(equalToConstant: 156)
+            emojiCollectionView.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 0),
+            emojiCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 1),
+            emojiCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            emojiCollectionView.heightAnchor.constraint(equalToConstant: 204)
         ])
         
         emojiCollectionView.register(EmojiCollectionCell.self, forCellWithReuseIdentifier: emojiCellIdentifier)
     }
     
     private func setupColorLabel() {
-        view.addSubview(colorLabel)
+        contentView.addSubview(colorLabel)
         
         NSLayoutConstraint.activate([
-            colorLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 28),
+            colorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
             colorLabel.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 16),
             colorLabel.widthAnchor.constraint(equalToConstant: 48),
         ])
@@ -292,17 +304,37 @@ final class HabitCreationViewController: UIViewController {
         colorCollectionView.backgroundColor = .clear
         colorCollectionView.isScrollEnabled = false
         
-        view.addSubview(colorCollectionView)
+        contentView.addSubview(colorCollectionView)
         colorCollectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             colorCollectionView.topAnchor.constraint(equalTo: colorLabel.bottomAnchor, constant: 0),
-            colorCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 1),
-            colorCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            colorCollectionView.heightAnchor.constraint(equalToConstant: 204)
+            colorCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 1),
+            colorCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            colorCollectionView.heightAnchor.constraint(equalToConstant: 204),
+            colorCollectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
         ])
         
         colorCollectionView.register(ColorCollectionCell.self,forCellWithReuseIdentifier: colorCellIdentifier)
+    }
+    
+    private func setupScrollView() {
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: buttonsStackView.topAnchor, constant: -16),
+
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
+        ])
     }
     
     // MARK: - Actions
@@ -324,7 +356,7 @@ final class HabitCreationViewController: UIViewController {
         let tracker = Tracker(
             id: UUID(),
             title: title,
-            colour: selectedColor,
+            color: selectedColor,
             emoji: selectedEmoji,
             schedule: selectedSchedule
         )
@@ -379,10 +411,10 @@ extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegat
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0 {
-            let categoryViewController = CategoryViewController()
-            let navigationController = UINavigationController(rootViewController: categoryViewController)
-            navigationController.modalPresentationStyle = .pageSheet
-            present(navigationController, animated: true)
+//            let categoryViewController = CategoryViewController()
+//            let navigationController = UINavigationController(rootViewController: categoryViewController)
+//            navigationController.modalPresentationStyle = .pageSheet
+//            present(navigationController, animated: true)
         }
         if  indexPath.row == 1 {
             let scheduleViewController = ScheduleViewController(selectedWeekDays: selectedSchedule)
@@ -475,6 +507,6 @@ extension HabitCreationViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0, left: 18, bottom: 24, right: 18)
+        return UIEdgeInsets(top: 24, left: 18, bottom: 24, right: 18)
     }
 }
