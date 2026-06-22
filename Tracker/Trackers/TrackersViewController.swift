@@ -156,7 +156,7 @@ final class TrackersViewController: UIViewController {
             do {
                 try self.trackerStore.addTracker(tracker, to: categoryTitle)
             } catch {
-                assertionFailure("Failed to save tracker: \(error)")
+                print("Failed to save tracker: \(error)")
             }
         }
         

@@ -56,6 +56,8 @@ final class CategoryViewController: UIViewController {
         return button
     }()
     
+    private let rowHeight = 75
+    
     init(selectedCategoryTitle: String? = nil) {
         self.viewModel = CategoryViewModel(selectedCategoryTitle: selectedCategoryTitle)
         super.init(nibName: nil, bundle: nil)
@@ -133,7 +135,7 @@ final class CategoryViewController: UIViewController {
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
-        tableView.rowHeight = 75
+        tableView.rowHeight = CGFloat(rowHeight)
         tableView.backgroundColor = .systemGray6
         tableView.layer.cornerRadius = 16
         tableView.layer.masksToBounds = true
