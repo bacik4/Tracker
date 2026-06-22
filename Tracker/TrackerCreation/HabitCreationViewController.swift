@@ -21,7 +21,7 @@ private enum TableItem: Int, CaseIterable {
 final class HabitCreationViewController: UIViewController {
     // MARK: - Public Properties
     
-    var onCreateTracker: ((Tracker) -> Void)?
+    var onCreateTracker: ((Tracker, String) -> Void)?
     
     // MARK: - Private Properties
     
@@ -84,6 +84,16 @@ final class HabitCreationViewController: UIViewController {
             updateCreateButtonState()
             tableView.reloadRows(
                 at: [IndexPath(row: TableItem.schedule.rawValue, section: 0)],
+                with: .automatic
+            )
+        }
+    }
+    
+    private var selectedCategory: String? {
+        didSet {
+            updateCreateButtonState()
+            tableView.reloadRows(
+                at: [IndexPath(row: TableItem.category.rawValue, section: 0)],
                 with: .automatic
             )
         }
@@ -359,7 +369,8 @@ final class HabitCreationViewController: UIViewController {
               !title.isEmpty,
               !selectedSchedule.isEmpty,
               let selectedEmoji,
-              let selectedColor
+              let selectedColor,
+              let selectedCategory
         else {
             return
         }
@@ -372,7 +383,7 @@ final class HabitCreationViewController: UIViewController {
             schedule: selectedSchedule
         )
         
-        onCreateTracker?(tracker)
+        onCreateTracker?(tracker, selectedCategory)
         dismiss(animated: true)
     }
     
@@ -382,7 +393,7 @@ final class HabitCreationViewController: UIViewController {
     
     private func updateCreateButtonState() {
         let title = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        let canCreate = !title.isEmpty && !selectedSchedule.isEmpty && selectedEmoji != nil && selectedColor != nil
+        let canCreate = !title.isEmpty && !selectedSchedule.isEmpty && selectedEmoji != nil && selectedColor != nil && selectedCategory != nil
         
         createButton.isEnabled = canCreate
         createButton.backgroundColor = canCreate ? .black : .systemGray
@@ -416,7 +427,7 @@ extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegat
         
         switch item {
         case .category:
-            cell.detailTextLabel?.text = nil
+            cell.detailTextLabel?.text = selectedCategory
             
         case .schedule:
             let text = scheduleText()
@@ -433,7 +444,17 @@ extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegat
         
         switch item {
         case .category:
-            break
+            let categoryViewController = CategoryViewController(
+                selectedCategoryTitle: selectedCategory
+            )
+            
+            categoryViewController.onCategorySelected = { [weak self] title in
+                self?.selectedCategory = title
+            }
+            
+            let navigationController = UINavigationController(rootViewController: categoryViewController)
+            navigationController.modalPresentationStyle = .pageSheet
+            present(navigationController, animated: true)
             
         case .schedule:
             let scheduleViewController = ScheduleViewController(selectedWeekDays: selectedSchedule)

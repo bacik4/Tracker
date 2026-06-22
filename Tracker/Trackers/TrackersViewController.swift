@@ -138,6 +138,11 @@ final class TrackersViewController: UIViewController {
         ])
         
         collectionView.register(TrackerCell.self, forCellWithReuseIdentifier: cellIdentifier)
+        collectionView.register(
+            TrackerSectionHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: TrackerSectionHeaderView.reuseIdentifier
+        )
     }
     
     // MARK: - Actions
@@ -145,11 +150,11 @@ final class TrackersViewController: UIViewController {
     @objc private func didTapAddButton() {
         let habitCreationViewController = HabitCreationViewController()
         
-        habitCreationViewController.onCreateTracker = { [weak self] tracker in
+        habitCreationViewController.onCreateTracker = { [weak self] tracker, categoryTitle in
             guard let self else { return }
             
             do {
-                try self.trackerStore.addTracker(tracker, to: "Важное")
+                try self.trackerStore.addTracker(tracker, to: categoryTitle)
             } catch {
                 assertionFailure("Failed to save tracker: \(error)")
             }
@@ -305,6 +310,23 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
         
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard kind == UICollectionView.elementKindSectionHeader,
+              let header = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: TrackerSectionHeaderView.reuseIdentifier,
+                for: indexPath
+              ) as? TrackerSectionHeaderView
+        else {
+            return UICollectionReusableView()
+        }
+        
+        let categoryTitle = visibleCategories[indexPath.section].title
+        header.configure(title: categoryTitle)
+        
+        return header
+    }
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
@@ -346,7 +368,15 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 24, left: 16, bottom: 16, right: 16)
+        return UIEdgeInsets(top: 12, left: 16, bottom: 16, right: 16)
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForHeaderInSection section: Int
+    ) -> CGSize {
+        return CGSize(width: collectionView.bounds.width, height: 18)
     }
 }
 
