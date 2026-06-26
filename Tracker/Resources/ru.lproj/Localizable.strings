@@ -1,0 +1,62 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Игорь Глебов on 25.06.2026.
+  
+*/
+
+// MARK: - TrackersViewController.swift
+
+"emptyState.title" = "Что будем отслеживать?";
+"TrackersNavBar.title" = "Трекеры";
+"searchController.title" = "Поиск";
+
+// MARK: - TabBarController.swift
+
+"TabBarItem1.title" = "Трекеры";
+"TabBarItem2.title" = "Статистика";
+
+// MARK: - StatisticsViewController
+
+"StatisticsViewController.title" = "Статистика";
+
+// MARK: - OnBoarding.swift
+
+"onboardingText1" = "Отслеживайте только то, что хотите";
+"onboardingText2" = "Даже если это не литры воды и йога";
+"onboardingButton.title" = "Вот это технологии!";
+
+// MARK: - CategoryViewController.swift
+
+"backLabel.title"  = "Привычки и события можно объединить по смыслу";
+"addCategoryButton.title" = "Добавить категорию";
+"CategoryNavBar.title" = "Категория";
+
+// MARK: - NewCategoryViewController.swift
+
+"textField.placeholder" = "Введите название категории";
+"doneButton" = "Готово";
+"NewCategoryNavBar.title" = "Новая категория";
+
+// MARK: - HabitCreationViewController.swift
+
+"HabitCreationTextField.placeholder" = "Введите название трекера";
+"cancelButton.title" = "Отменить";
+"createButton.title" = "Создать";
+"emojiLabel" = "Emoji";
+"colorLabel" = "Цвет";
+"HabitCreationNavBar.title" = "Новая привычка";
+
+// MARK: - ScheduleViewController.swift
+
+"monday"    = "Понедельник";
+"tuesday"   = "Вторник";
+"wednesday" = "Среда";
+"thursday"  = "Четверг";
+"friday"    = "Пятница";
+"saturday"  = "Суббота";
+"sunday"    = "Воскресенье";
+"ScheduleViewController.doneButton" = "Готово";
+"ScheduleNavBar.title" = "Расписание";
+

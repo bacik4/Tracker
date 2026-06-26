@@ -27,7 +27,7 @@ final class HabitCreationViewController: UIViewController {
     
     private let textField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название трекера"
+        textField.placeholder = NSLocalizedString("HabitCreationTextField.placeholder", comment: "HabitCreationTextField")
         textField.font = .systemFont(ofSize: 17)
         textField.textColor = .black
         textField.backgroundColor = .systemGray6
@@ -45,7 +45,7 @@ final class HabitCreationViewController: UIViewController {
     
     private var cancelButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Отменить", for: .normal)
+        button.setTitle(NSLocalizedString("cancelButton.title", comment: "cancelButton title"), for: .normal)
         button.setTitleColor(.systemRed, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
@@ -57,7 +57,7 @@ final class HabitCreationViewController: UIViewController {
     
     private let createButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Создать", for: .normal)
+        button.setTitle(NSLocalizedString("createButton.title", comment: "createButton title"), for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.backgroundColor = .systemGray
@@ -101,7 +101,7 @@ final class HabitCreationViewController: UIViewController {
     
     private let emojiLabel: UILabel = {
         let label = UILabel()
-        label.text = "Emoji"
+        label.text = NSLocalizedString("emojiLabel", comment: "emojiLabel text")
         label.font = .systemFont(ofSize: 19, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -109,7 +109,7 @@ final class HabitCreationViewController: UIViewController {
     
     private let colorLabel: UILabel = {
         let label = UILabel()
-        label.text = "Цвет"
+        label.text = NSLocalizedString("colorLabel", comment: "colorLabel text")
         label.font = .systemFont(ofSize: 19, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -189,7 +189,7 @@ final class HabitCreationViewController: UIViewController {
     // MARK: - Private Methods
     
     private func setupNavBar() {
-        title = "Новая привычка"
+        title = NSLocalizedString("HabitCreationNavBar.title", comment: "HabitCreationNavBar title")
         
         navigationItem.largeTitleDisplayMode = .never
         
@@ -315,7 +315,6 @@ final class HabitCreationViewController: UIViewController {
         NSLayoutConstraint.activate([
             colorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
             colorLabel.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 16),
-            colorLabel.widthAnchor.constraint(equalToConstant: 48),
         ])
     }
     

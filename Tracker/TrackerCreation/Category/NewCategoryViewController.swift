@@ -14,7 +14,7 @@ final class NewCategoryViewController: UIViewController {
     
     private let textField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название категории"
+        textField.placeholder = NSLocalizedString("textField.placeholder", comment: "Text displayed as placeholder")
         textField.font = .systemFont(ofSize: 17)
         textField.textColor = .black
         textField.backgroundColor = .systemGray6
@@ -32,7 +32,7 @@ final class NewCategoryViewController: UIViewController {
     
     private let doneButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Готово", for: .normal)
+        button.setTitle(NSLocalizedString("doneButton", comment: "Text displayed on doneButton"), for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.backgroundColor = .systemGray
@@ -56,7 +56,7 @@ final class NewCategoryViewController: UIViewController {
     // MARK: - Private Methods
     
     private func setupNavBar() {
-        title = "Новая категория"
+        title = NSLocalizedString("NewCategoryNavBar.title", comment: "NavBarTitle")
         navigationItem.largeTitleDisplayMode = .never
         
         navigationController?.navigationBar.titleTextAttributes = [

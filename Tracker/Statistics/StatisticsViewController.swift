@@ -10,7 +10,7 @@ final class StatisticsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Статистика"
+        title = NSLocalizedString("StatisticsViewController.title", comment: "Statistics title")
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always

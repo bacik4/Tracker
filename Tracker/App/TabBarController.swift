@@ -31,12 +31,12 @@ final class TabBarController: UITabBarController {
         )
         
         trackersNavigationController.tabBarItem = makeTabBarItem(
-            title: "Трекеры",
+            title: NSLocalizedString("TabBarItem1.title", comment: "TabBarTitle"),
             imageName: "record.circle.fill",
         )
         
         statisticsNavigationController.tabBarItem = makeTabBarItem(
-            title: "Статистика",
+            title: NSLocalizedString("TabBarItem2.title", comment: "TabBarTitle"),
             imageName: "hare.fill",
         )
         

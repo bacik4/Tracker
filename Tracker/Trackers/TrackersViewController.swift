@@ -33,7 +33,7 @@ final class TrackersViewController: UIViewController {
     
     private let backLabel: UILabel = {
         let label = UILabel()
-        label.text = "Что будем отслеживать?"
+        label.text = NSLocalizedString("emptyState.title", comment: "Text displayed when you have no trakers")
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = .black
         label.textAlignment = .center
@@ -69,6 +69,7 @@ final class TrackersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        definesPresentationContext = true
         trackerStore.delegate = self
         trackerRecordStore.delegate = self
         
@@ -83,7 +84,7 @@ final class TrackersViewController: UIViewController {
     // MARK: - Setup
     
     private func setupNavBar() {
-        title = "Трекеры"
+        title = NSLocalizedString("TrackersNavBar.title", comment: "Navigation Bar title")
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
@@ -99,8 +100,9 @@ final class TrackersViewController: UIViewController {
         datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
         
         navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Поиск"
+        searchController.searchBar.placeholder = NSLocalizedString("searchController.title", comment: "searchController placeholder")
         searchController.searchResultsUpdater = self
     }
     

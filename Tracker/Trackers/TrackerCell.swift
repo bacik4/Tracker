@@ -132,7 +132,7 @@ final class TrackerCell: UICollectionViewCell {
     }
     
     func updateCompletion(isCompleted: Bool, completedDays: Int) {
-        daysLabel.text = "\(completedDays) дней"
+        daysLabel.text = String.localizedStringWithFormat(NSLocalizedString("NumberOfDays", comment: "Days record"), completedDays)
         
         let imageName = isCompleted ? "checkmark" : "plus"
         button.setImage(UIImage(systemName: imageName), for: .normal)

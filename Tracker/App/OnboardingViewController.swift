@@ -8,8 +8,8 @@ import UIKit
 
 final class OnboardingViewController: UIPageViewController {
     
-    private let onboardingText1 = "Отслеживайте только то, что хотите"
-    private let onboardingText2 = "Даже если это не литры воды и йога"
+    private let onboardingText1 = NSLocalizedString("onboardingText1", comment: "Text displayed on the first page")
+    private let onboardingText2 = NSLocalizedString("onboardingText2", comment: "Text displayed on the second page")
     
     private lazy var pages: [UIViewController] = [
         OnboardingPageViewController(
@@ -34,7 +34,7 @@ final class OnboardingViewController: UIPageViewController {
     
     private lazy var doneButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Вот это технологии!", for: .normal)
+        button.setTitle(NSLocalizedString("onboardingButton.title", comment: "Text displayed on the button"), for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .black
         button.layer.cornerRadius = 16

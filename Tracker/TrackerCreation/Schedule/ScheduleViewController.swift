@@ -17,19 +17,19 @@ final class ScheduleViewController: UIViewController {
     private let cellIdentifier = "DayCell"
     
     private let weekDays: [(title: String, weekDay: WeekDay)] = [
-        ("Понедельник", .monday),
-        ("Вторник", .tuesday),
-        ("Среда", .wednesday),
-        ("Четверг", .thursday),
-        ("Пятница", .friday),
-        ("Суббота", .saturday),
-        ("Воскресенье", .sunday)
+        (NSLocalizedString("monday", comment: ""), .monday),
+        (NSLocalizedString("tuesday", comment: ""), .tuesday),
+        (NSLocalizedString("wednesday", comment: ""), .wednesday),
+        (NSLocalizedString("thursday", comment: ""), .thursday),
+        (NSLocalizedString("friday", comment: ""), .friday),
+        (NSLocalizedString("saturday", comment: ""), .saturday),
+        (NSLocalizedString("sunday", comment: ""), .sunday)
     ]
     
     private let doneButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .black
-        button.setTitle("Готово", for: .normal)
+        button.setTitle(NSLocalizedString("ScheduleViewController.doneButton", comment: ""), for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
@@ -64,7 +64,7 @@ final class ScheduleViewController: UIViewController {
     // MARK: - Private Methods
     
     private func setupNavBar() {
-        title = "Расписание"
+        title = NSLocalizedString("ScheduleNavBar.title", comment: "")
         navigationItem.largeTitleDisplayMode = .never
         
         navigationController?.navigationBar.titleTextAttributes = [
