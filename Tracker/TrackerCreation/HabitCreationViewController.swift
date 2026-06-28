@@ -6,6 +6,11 @@
 //
 import UIKit
 
+enum TrackerFormMode {
+    case create
+    case edit(tracker: Tracker, categoryTitle: String, completedDays: Int)
+}
+
 private enum TableItem: Int, CaseIterable {
     case category
     case schedule
@@ -22,6 +27,9 @@ final class HabitCreationViewController: UIViewController {
     // MARK: - Public Properties
     
     var onCreateTracker: ((Tracker, String) -> Void)?
+    var onUpdateTracker: ((Tracker, String) -> Void)?
+    
+    private let mode: TrackerFormMode
     
     // MARK: - Private Properties
     
@@ -115,6 +123,16 @@ final class HabitCreationViewController: UIViewController {
         return label
     }()
     
+    private let completedDaysLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.textColor = .black
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true
+        return label
+    }()
+    
     private var emojiCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -170,6 +188,15 @@ final class HabitCreationViewController: UIViewController {
     
     // MARK: - Lifecycle
     
+    init(mode: TrackerFormMode = .create) {
+        self.mode = mode
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -178,18 +205,25 @@ final class HabitCreationViewController: UIViewController {
         setupNavBar()
         setupButtons()
         setupScrollView()
+        setupCompletedDaysLabel()
         setupTextField()
         setupTableView()
         setupEmojiLabel()
         setupEmojiColletion()
         setupColorLabel()
         setupColorCollection()
+        configureForMode()
     }
     
     // MARK: - Private Methods
     
     private func setupNavBar() {
-        title = NSLocalizedString("HabitCreationNavBar.title", comment: "HabitCreationNavBar title")
+        switch mode {
+        case .create:
+            title = NSLocalizedString("HabitCreationNavBar.title", comment: "HabitCreationNavBar title")
+        case .edit:
+            title = NSLocalizedString("EditTrackerNavBar.title", comment: "EditTrackerNavBar title")
+        }
         
         navigationItem.largeTitleDisplayMode = .never
         
@@ -209,8 +243,20 @@ final class HabitCreationViewController: UIViewController {
             for: .editingChanged
         )
         
+        let topAnchor: NSLayoutYAxisAnchor
+        let topConstant: CGFloat
+        
+        switch mode {
+        case .create:
+            topAnchor = contentView.topAnchor
+            topConstant = 24
+        case .edit:
+            topAnchor = completedDaysLabel.bottomAnchor
+            topConstant = 40
+        }
+        
         NSLayoutConstraint.activate([
-            textField.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
+            textField.topAnchor.constraint(equalTo: topAnchor, constant: topConstant),
             textField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             textField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             textField.heightAnchor.constraint(equalToConstant: 75)
@@ -357,6 +403,46 @@ final class HabitCreationViewController: UIViewController {
         ])
     }
     
+    private func setupCompletedDaysLabel() {
+        contentView.addSubview(completedDaysLabel)
+        
+        NSLayoutConstraint.activate([
+            completedDaysLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
+            completedDaysLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor)
+        ])
+    }
+    
+    private func configureForMode() {
+        switch mode {
+        case .create:
+            createButton.setTitle(NSLocalizedString("createButton.title", comment: ""), for: .normal)
+            completedDaysLabel.isHidden = true
+            
+        case let .edit(tracker, categoryTitle, completedDays):
+            createButton.setTitle(NSLocalizedString("saveButton.title", comment: ""), for: .normal)
+            
+            completedDaysLabel.isHidden = false
+            completedDaysLabel.text = String.localizedStringWithFormat(
+                NSLocalizedString("NumberOfDays", comment: ""),
+                completedDays
+            )
+            
+            textField.text = tracker.title
+            selectedSchedule = tracker.schedule
+            selectedCategory = categoryTitle
+            selectedEmoji = tracker.emoji
+            
+            selectedColor = colors.first {
+                $0.hexString() == tracker.color.hexString()
+            } ?? tracker.color
+            
+            tableView.reloadData()
+            emojiCollectionView.reloadData()
+            colorCollectionView.reloadData()
+            updateCreateButtonState()
+        }
+    }
+    
     // MARK: - Actions
     
     @objc private func didTapCancelButton() {
@@ -374,15 +460,30 @@ final class HabitCreationViewController: UIViewController {
             return
         }
         
-        let tracker = Tracker(
-            id: UUID(),
-            title: title,
-            color: selectedColor,
-            emoji: selectedEmoji,
-            schedule: selectedSchedule
-        )
+        switch mode {
+        case .create:
+            let tracker = Tracker(
+                id: UUID(),
+                title: title,
+                color: selectedColor,
+                emoji: selectedEmoji,
+                schedule: selectedSchedule
+            )
+
+            onCreateTracker?(tracker, selectedCategory)
+            
+        case let .edit(oldTracker, _, _):
+            let updatedTracker = Tracker(
+                id: oldTracker.id,
+                title: title,
+                color: selectedColor,
+                emoji: selectedEmoji,
+                schedule: selectedSchedule
+            )
+            
+            onUpdateTracker?(updatedTracker, selectedCategory)
+        }
         
-        onCreateTracker?(tracker, selectedCategory)
         dismiss(animated: true)
     }
     

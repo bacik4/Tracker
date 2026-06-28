@@ -112,6 +112,42 @@ final class TrackerStore: NSObject {
         try context.save()
     }
     
+    func deleteTracker(_ tracker: Tracker) throws {
+        let request = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
+        request.fetchLimit = 1
+        
+        guard let trackerCoreData = try context.fetch(request).first else {
+            return
+        }
+        
+        context.delete(trackerCoreData)
+        try context.save()
+    }
+    
+    func updateTracker(_ tracker: Tracker, categoryTitle: String) throws {
+        let request: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
+        request.fetchLimit = 1
+        
+        guard let trackerCoreData = try context.fetch(request).first else {
+            return
+        }
+        
+        trackerCoreData.title = tracker.title
+        trackerCoreData.colorHex = tracker.color.hexString()
+        trackerCoreData.emoji = tracker.emoji
+        trackerCoreData.schedule = tracker.schedule
+            .sorted { $0.rawValue < $1.rawValue }
+            .map { String($0.rawValue) }
+            .joined(separator: ",")
+        
+        let categoryCoreData = try getOrCreateCategory(with: categoryTitle)
+        trackerCoreData.category = categoryCoreData
+        
+        try context.save()
+    }
+    
     func categories() throws -> [TrackerCategory] {
         let trackerCoreDataObjects = fetchedResultsController.fetchedObjects ?? []
         

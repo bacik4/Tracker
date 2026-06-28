@@ -140,6 +140,19 @@ final class TrackerRecordStore: NSObject {
         try context.save()
     }
     
+    func deleteRecords(for trackerId: UUID) throws {
+        let request: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "trackerId == %@", trackerId as CVarArg)
+        
+        let records = try context.fetch(request)
+        
+        records.forEach { record in
+            context.delete(record)
+        }
+        
+        try context.save()
+    }
+    
     func isTrackerCompleted(_ trackerId: UUID, on date: Date) throws -> Bool {
         let request: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
         

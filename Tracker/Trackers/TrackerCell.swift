@@ -40,10 +40,14 @@ final class TrackerCell: UICollectionViewCell {
     }
     
     private func setupViews() {
-        contentView.backgroundColor = .white
+        backgroundColor = .clear
         
-        colorView.layer.cornerRadius = 16
-        colorView.layer.masksToBounds = true
+        contentView.backgroundColor = .systemBackground
+        contentView.layer.cornerRadius = 16
+        contentView.layer.masksToBounds = true
+        
+        colorView.layer.cornerRadius = 0
+        colorView.layer.masksToBounds = false
         
         label.textColor = .white
         label.font = .systemFont(ofSize: 12, weight: .medium)
@@ -64,7 +68,7 @@ final class TrackerCell: UICollectionViewCell {
         button.layer.masksToBounds = true
         
         daysLabel.font = .systemFont(ofSize: 12, weight: .medium)
-        daysLabel.textColor = .black
+        daysLabel.textColor = .label
     }
     
     private func setupLayout() {

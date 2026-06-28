@@ -13,7 +13,7 @@ final class TrackersViewController: UIViewController {
     var completedTrackers: [TrackerRecord] = []
     
     // MARK: - Private Properties
-
+    
     private let searchController = UISearchController()
     private let cellIdentifier = "cell"
     
@@ -288,7 +288,7 @@ final class TrackersViewController: UIViewController {
                 backImageView.image = UIImage(resource: .backgroundStar)
             }
         }
-
+        
         collectionView.reloadData()
     }
     
@@ -308,6 +308,42 @@ final class TrackersViewController: UIViewController {
             assertionFailure("Failed to load completed trackers: \(error)")
         }
         
+    }
+    
+    private func showDeleteAlert(for tracker: Tracker) {
+        let alert = UIAlertController(
+            title: nil,
+            message: NSLocalizedString("deleteTracker.alert.message", comment: ""),
+            preferredStyle: .actionSheet
+        )
+        
+        let deleteAction = UIAlertAction(
+            title: NSLocalizedString("deleteTracker.alert.delete", comment: ""),
+            style: .destructive
+        ) { [weak self] _ in
+            guard let self else {return}
+            
+            do {
+                try self.trackerRecordStore.deleteRecords(for: tracker.id)
+                try self.trackerStore.deleteTracker(tracker)
+                
+                self.reloadCategoriesFromStore()
+                self.reloadCompletedTrackersFromStore()
+                self.updateVisibleCategories()
+            } catch {
+                print(error)
+            }
+        }
+        
+        let cancelAction = UIAlertAction(
+            title: NSLocalizedString("deleteTracker.alert.cancel", comment: ""),
+            style: .cancel
+        )
+        
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
     }
     
     // MARK: - Completion Logic
@@ -418,6 +454,69 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
         header.configure(title: categoryTitle)
         
         return header
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let indexPath = indexPaths.first else {
+            return nil
+        }
+        
+        let tracker = visibleCategories[indexPath.section].trackers[indexPath.item]
+        let categoryTitle = visibleCategories[indexPath.section].title
+        
+        return UIContextMenuConfiguration(
+            identifier: nil,
+            previewProvider: nil,
+        ) { [weak self] _ in
+            guard let self else {return nil}
+            
+            let editAction = UIAction(
+                title: NSLocalizedString("ContextEdit", comment: "")
+            ) { [weak self] _ in
+                guard let self else {return}
+                
+                let completedDays = self.completedTrackers.filter { record in
+                    record.trackerId == tracker.id
+                }.count
+                
+                let editTrackerViewController = HabitCreationViewController(
+                    mode: .edit(
+                        tracker: tracker,
+                        categoryTitle: categoryTitle,
+                        completedDays: completedDays
+                    )
+                )
+                
+                editTrackerViewController.onUpdateTracker = { [weak self] updatedTracker, categoryTitle in
+                    guard let self else { return }
+                    
+                    do {
+                        try self.trackerStore.updateTracker(updatedTracker, categoryTitle: categoryTitle)
+                        self.reloadCategoriesFromStore()
+                        self.updateVisibleCategories()
+                    } catch {
+                        assertionFailure("Failed to update tracker: \(error)")
+                    }
+                }
+                
+                let navigationController = UINavigationController(rootViewController: editTrackerViewController)
+                navigationController.modalPresentationStyle = .pageSheet
+                self.present(navigationController, animated: true)
+            }
+            
+            let deleteAction = UIAction(
+                title: NSLocalizedString("ContextDelete", comment: ""),
+                attributes: .destructive
+            ) { [weak self] _ in
+                guard let self else {return}
+                self.showDeleteAlert(for: tracker)
+            }
+            
+            return UIMenu(children: [
+                editAction,
+                deleteAction
+            ])
+        }
     }
 }
 

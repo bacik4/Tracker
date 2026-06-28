@@ -13,6 +13,11 @@
 "searchController.title" = "Поиск";
 "filterButton.title" = "Фильтры";
 "nothingFound.title" = "Ничего не найдено";
+"ContextEdit" = "Редактировать";
+"ContextDelete" = "Удалить";
+"deleteTracker.alert.message" = "Уверены что хотите удалить трекер?";
+"deleteTracker.alert.delete" = "Удалить";
+"deleteTracker.alert.cancel" = "Отменить";
 
 // MARK: - TabBarController.swift
 
@@ -49,6 +54,8 @@
 "emojiLabel" = "Emoji";
 "colorLabel" = "Цвет";
 "HabitCreationNavBar.title" = "Новая привычка";
+"EditTrackerNavBar.title" = "Редактирование привычки";
+"saveButton.title" = "Сохранить";
 
 // MARK: - ScheduleViewController.swift
 
