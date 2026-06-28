@@ -11,6 +11,8 @@
 "emptyState.title" = "What shall we track?";
 "TrackersNavBar.title" = "Trackers";
 "searchController.title" = "Search";
+"filterButton.title" = "Filters";
+"nothingFound.title" = "Nothing found";
 
 // MARK: - TabBarController.swift
 
@@ -59,3 +61,11 @@
 "sunday"    = "Sunday";
 "ScheduleViewController.doneButton" = "Done";
 "ScheduleNavBar.title" = "Schedule";
+
+// MARK: - FilterViewController.swift
+
+"FilterViewControllerNavBar.title" = "Filters";
+"allTraсkers" = "All trackers";
+"TrackersForToday" = "Trackers for today";
+"Completed" = "Completed";
+"Uncompleted" = "Not completed";

@@ -11,6 +11,8 @@
 "emptyState.title" = "Что будем отслеживать?";
 "TrackersNavBar.title" = "Трекеры";
 "searchController.title" = "Поиск";
+"filterButton.title" = "Фильтры";
+"nothingFound.title" = "Ничего не найдено";
 
 // MARK: - TabBarController.swift
 
@@ -60,3 +62,10 @@
 "ScheduleViewController.doneButton" = "Готово";
 "ScheduleNavBar.title" = "Расписание";
 
+// MARK: - FilterViewController.swift
+
+"FilterViewControllerNavBar.title" = "Фильтры";
+"allTraсkers" = "Все трекеры";
+"TrackersForToday" = "Трекеры на сегодня";
+"Completed" = "Завершенные";
+"Uncompleted" = "Не завершенные";

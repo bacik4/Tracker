@@ -21,6 +21,7 @@ final class TrackersViewController: UIViewController {
     private let trackerRecordStore = TrackerRecordStore()
     
     private var currentDate = Date()
+    private var selectedFilter: TrackerFilter = .allTrackers
     private var visibleCategories: [TrackerCategory] = []
     
     private let backImageView: UIImageView = {
@@ -58,6 +59,17 @@ final class TrackersViewController: UIViewController {
         return datePicker
     }()
     
+    private let filterButton: UIButton = {
+        let button = UIButton()
+        button.setTitle(NSLocalizedString("filterButton.title", comment: "Text on filter button"), for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = UIColor(resource: .filterButtton)
+        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
+        button.layer.cornerRadius = 16
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     private var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -76,6 +88,7 @@ final class TrackersViewController: UIViewController {
         setupNavBar()
         setupCollectionView()
         setupBack()
+        setupFilterButton()
         
         reloadCompletedTrackersFromStore()
         reloadCategoriesFromStore()
@@ -139,12 +152,32 @@ final class TrackersViewController: UIViewController {
             collectionView.rightAnchor.constraint(equalTo: view.rightAnchor)
         ])
         
+        collectionView.contentInset.bottom = 80
+        
         collectionView.register(TrackerCell.self, forCellWithReuseIdentifier: cellIdentifier)
         collectionView.register(
             TrackerSectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: TrackerSectionHeaderView.reuseIdentifier
         )
+    }
+    
+    private func setupFilterButton() {
+        view.addSubview(filterButton)
+        
+        filterButton.addTarget(
+            self,
+            action: #selector(didTapFilterButton),
+            for: .touchUpInside
+        )
+        
+        NSLayoutConstraint.activate([
+            filterButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 131),
+            filterButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -130),
+            filterButton.heightAnchor.constraint(equalToConstant: 50),
+            filterButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        ])
+        
     }
     
     // MARK: - Actions
@@ -173,6 +206,35 @@ final class TrackersViewController: UIViewController {
         
     }
     
+    @objc private func didTapFilterButton() {
+        let filterViewController = FilterViewController()
+        filterViewController.selectedFilter = selectedFilter
+        
+        filterViewController.onFilterSelected = { [weak self] filter in
+            guard let self else { return }
+            
+            switch filter {
+            case .allTrackers:
+                self.selectedFilter = .allTrackers
+                
+            case .trackersForToday:
+                self.selectedFilter = .allTrackers
+                self.currentDate = Date()
+                self.datePicker.date = Date()
+                
+            case .completed, .uncompleted:
+                self.selectedFilter = filter
+            }
+            
+            self.updateVisibleCategories()
+        }
+        
+        
+        let navigationController = UINavigationController(rootViewController: filterViewController)
+        navigationController.modalPresentationStyle = .pageSheet
+        present(navigationController, animated: true)
+    }
+    
     private func updateVisibleCategories() {
         let selectedWeekDayNumber = Calendar.current.component(.weekday, from: currentDate)
         
@@ -180,13 +242,28 @@ final class TrackersViewController: UIViewController {
         
         let searchText = searchController.searchBar.text?.lowercased() ?? ""
         
+        let hasTrackersForSelectedDay = categories.contains { category in
+            category.trackers.contains { tracker in
+                tracker.schedule.contains(selectedWeekDay)
+            }
+        }
+        
         visibleCategories = categories.compactMap { category in
             let visibleTrackers = category.trackers.filter { tracker in
                 let isScheduledForSelectedDay = tracker.schedule.contains(selectedWeekDay)
-                
                 let isMatchingSearch = searchText.isEmpty || tracker.title.lowercased().contains(searchText)
+                let isCompleted = isTrackerCompleted(tracker, on: currentDate)
                 
-                return isScheduledForSelectedDay && isMatchingSearch
+                switch selectedFilter {
+                case .allTrackers:
+                    return isScheduledForSelectedDay && isMatchingSearch
+                case .trackersForToday:
+                    return isScheduledForSelectedDay && isMatchingSearch
+                case .completed:
+                    return isScheduledForSelectedDay && isMatchingSearch && isCompleted
+                case .uncompleted:
+                    return isScheduledForSelectedDay && isMatchingSearch && !isCompleted
+                }
             }
             
             if visibleTrackers.isEmpty {
@@ -196,10 +273,22 @@ final class TrackersViewController: UIViewController {
             return TrackerCategory(title: category.title, trackers: visibleTrackers)
         }
         
-        let isEmpty = visibleCategories.isEmpty
-        emptyStackView.isHidden = !isEmpty
-        collectionView.isHidden = isEmpty
+        let isVisisbleCategoriesEmpty = visibleCategories.isEmpty
         
+        emptyStackView.isHidden = !isVisisbleCategoriesEmpty
+        filterButton.isHidden = !hasTrackersForSelectedDay
+        
+        if isVisisbleCategoriesEmpty {
+            if hasTrackersForSelectedDay {
+                backLabel.text = NSLocalizedString("nothingFound.title", comment: "")
+                backImageView.image = UIImage(resource: .nothingFound)
+            }
+            else {
+                backLabel.text = NSLocalizedString("emptyState.title", comment: "")
+                backImageView.image = UIImage(resource: .backgroundStar)
+            }
+        }
+
         collectionView.reloadData()
     }
     
@@ -257,6 +346,7 @@ final class TrackersViewController: UIViewController {
                 try completeTracker(tracker, on: date)
             }
             reloadCompletedTrackersFromStore()
+            updateVisibleCategories()
         } catch {
             assertionFailure("Failed to update tracker completion: \(error)")
         }
@@ -408,7 +498,7 @@ extension TrackersViewController: TrackerRecordStoreDelegate {
         didUpdate update: TrackerRecordStoreUpdate
     ) {
         reloadCompletedTrackersFromStore()
-        collectionView.reloadData()
+        updateVisibleCategories()
     }
 }
 
