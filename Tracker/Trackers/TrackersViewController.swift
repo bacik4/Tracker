@@ -96,6 +96,16 @@ final class TrackersViewController: UIViewController {
         reloadCategoriesFromStore()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        AnalyticsService.report(event: "open", screen: "Main")
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        AnalyticsService.report(event: "close", screen: "Main")
+    }
+    
     // MARK: - Setup
     
     private func setupNavBar() {
@@ -187,6 +197,7 @@ final class TrackersViewController: UIViewController {
     // MARK: - Actions
     
     @objc private func didTapAddButton() {
+        AnalyticsService.report(event: "click", screen: "Main", item: "add_track")
         let habitCreationViewController = HabitCreationViewController()
         
         habitCreationViewController.onCreateTracker = { [weak self] tracker, categoryTitle in
@@ -211,6 +222,7 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func didTapFilterButton() {
+        AnalyticsService.report(event: "click", screen: "Main", item: "filter")
         let filterViewController = FilterViewController()
         filterViewController.selectedFilter = selectedFilter
         
@@ -436,7 +448,7 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
         
         cell.onButtonTap = { [weak self] in
             guard let self else { return }
-            
+            AnalyticsService.report(event: "click", screen: "Main", item: "track")
             self.toggleTrackerCompletion(tracker, on: self.currentDate)
         }
         
@@ -478,6 +490,7 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
                 title: NSLocalizedString("ContextEdit", comment: "")
             ) { [weak self] _ in
                 guard let self else {return}
+                AnalyticsService.report(event: "click", screen: "Main", item: "edit")
                 
                 let completedDays = self.completedTrackers.filter { record in
                     record.trackerId == tracker.id
@@ -513,6 +526,7 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
                 attributes: .destructive
             ) { [weak self] _ in
                 guard let self else {return}
+                AnalyticsService.report(event: "click", screen: "Main", item: "delete")
                 self.showDeleteAlert(for: tracker)
             }
             
