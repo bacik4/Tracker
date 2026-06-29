@@ -16,8 +16,8 @@ final class NewCategoryViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = NSLocalizedString("textField.placeholder", comment: "Text displayed as placeholder")
         textField.font = .systemFont(ofSize: 17)
-        textField.textColor = .black
-        textField.backgroundColor = .systemGray6
+        textField.textColor = .label
+        textField.backgroundColor = Colors.tableBackgroundColor
         textField.layer.cornerRadius = 16
         textField.layer.masksToBounds = true
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -33,7 +33,7 @@ final class NewCategoryViewController: UIViewController {
     private let doneButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle(NSLocalizedString("doneButton", comment: "Text displayed on doneButton"), for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(Colors.TitleOnblackWhiteButtonsColor, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.backgroundColor = .systemGray
         button.layer.cornerRadius = 16
@@ -47,7 +47,7 @@ final class NewCategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.viewBackground
         setupNavBar()
         setupTextField()
         setupButton()
@@ -61,7 +61,7 @@ final class NewCategoryViewController: UIViewController {
         
         navigationController?.navigationBar.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.label
         ]
     }
     
@@ -106,7 +106,7 @@ final class NewCategoryViewController: UIViewController {
         let canCreate = !title.isEmpty
         
         doneButton.isEnabled = canCreate
-        doneButton.backgroundColor = canCreate ? .black : .systemGray
+        doneButton.backgroundColor = canCreate ? Colors.blackWhiteButtonsColor : .systemGray
     }
     
     // MARK: - Actions

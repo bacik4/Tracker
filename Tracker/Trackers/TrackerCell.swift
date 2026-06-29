@@ -42,7 +42,7 @@ final class TrackerCell: UICollectionViewCell {
     private func setupViews() {
         backgroundColor = .clear
         
-        contentView.backgroundColor = .systemBackground
+        contentView.backgroundColor = Colors.viewBackground
         contentView.layer.cornerRadius = 16
         contentView.layer.masksToBounds = true
         

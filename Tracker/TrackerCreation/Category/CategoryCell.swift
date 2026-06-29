@@ -12,7 +12,7 @@ final class CategoryCell: UITableViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17)
-        label.textColor = .black
+        label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -51,7 +51,7 @@ final class CategoryCell: UITableViewCell {
     private func setupCell() {
         selectionStyle = .none
         backgroundColor = .clear
-        contentView.backgroundColor = .systemGray6
+        contentView.backgroundColor = Colors.tableBackgroundColor
         
         contentView.addSubview(titleLabel)
         contentView.addSubview(separatorView)

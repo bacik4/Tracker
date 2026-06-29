@@ -37,8 +37,8 @@ final class HabitCreationViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = NSLocalizedString("HabitCreationTextField.placeholder", comment: "HabitCreationTextField")
         textField.font = .systemFont(ofSize: 17)
-        textField.textColor = .black
-        textField.backgroundColor = .systemGray6
+        textField.textColor = .label
+        textField.backgroundColor = Colors.tableBackgroundColor
         textField.layer.cornerRadius = 16
         textField.layer.masksToBounds = true
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -66,7 +66,7 @@ final class HabitCreationViewController: UIViewController {
     private let createButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle(NSLocalizedString("createButton.title", comment: "createButton title"), for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(Colors.TitleOnblackWhiteButtonsColor, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.backgroundColor = .systemGray
         button.layer.cornerRadius = 16
@@ -126,7 +126,7 @@ final class HabitCreationViewController: UIViewController {
     private let completedDaysLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 32, weight: .bold)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isHidden = true
@@ -200,7 +200,7 @@ final class HabitCreationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.viewBackground
         
         setupNavBar()
         setupButtons()
@@ -229,7 +229,7 @@ final class HabitCreationViewController: UIViewController {
         
         navigationController?.navigationBar.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.label
         ]
         
     }
@@ -268,7 +268,7 @@ final class HabitCreationViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         
-        tableView.backgroundColor = .systemGray6
+        tableView.backgroundColor = Colors.tableBackgroundColor
         tableView.layer.cornerRadius = 16
         tableView.layer.masksToBounds = true
         
@@ -496,7 +496,7 @@ final class HabitCreationViewController: UIViewController {
         let canCreate = !title.isEmpty && !selectedSchedule.isEmpty && selectedEmoji != nil && selectedColor != nil && selectedCategory != nil
         
         createButton.isEnabled = canCreate
-        createButton.backgroundColor = canCreate ? .black : .systemGray
+        createButton.backgroundColor = canCreate ? Colors.blackWhiteButtonsColor : .systemGray
     }
 }
 
@@ -516,12 +516,12 @@ extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegat
         }
         cell.textLabel?.text = item.title
         cell.textLabel?.font = .systemFont(ofSize: 17)
-        cell.textLabel?.textColor = .black
+        cell.textLabel?.textColor = .label
         
         cell.detailTextLabel?.font = .systemFont(ofSize: 17)
         cell.detailTextLabel?.textColor = .systemGray
         
-        cell.backgroundColor = .systemGray6
+        cell.backgroundColor = Colors.tableBackgroundColor
         cell.accessoryType = .disclosureIndicator
         cell.selectionStyle = .none
         

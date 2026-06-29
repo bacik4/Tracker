@@ -28,9 +28,9 @@ final class ScheduleViewController: UIViewController {
     
     private let doneButton: UIButton = {
         let button = UIButton(type: .system)
-        button.backgroundColor = .black
+        button.backgroundColor = Colors.blackWhiteButtonsColor
         button.setTitle(NSLocalizedString("ScheduleViewController.doneButton", comment: ""), for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(Colors.TitleOnblackWhiteButtonsColor, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -55,7 +55,7 @@ final class ScheduleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.viewBackground
         setupNavBar()
         setupTableView()
         setupDoneButton()
@@ -69,7 +69,7 @@ final class ScheduleViewController: UIViewController {
         
         navigationController?.navigationBar.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.label
         ]
     }
     
@@ -80,7 +80,7 @@ final class ScheduleViewController: UIViewController {
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
         
-        tableView.backgroundColor = .systemGray6
+        tableView.backgroundColor = Colors.tableBackgroundColor
         tableView.layer.cornerRadius = 16
         tableView.layer.masksToBounds = true
         
@@ -147,8 +147,8 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
         
         cell.textLabel?.text = item.title
         cell.textLabel?.font = .systemFont(ofSize: 17)
-        cell.textLabel?.textColor = .black
-        cell.backgroundColor = .systemGray6
+        cell.textLabel?.textColor = .label
+        cell.backgroundColor = Colors.tableBackgroundColor
         cell.selectionStyle = .none
         
         let switchView = UISwitch()

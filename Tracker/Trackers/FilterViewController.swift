@@ -44,7 +44,7 @@ final class FilterViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.viewBackground
         setupNavBar()
         setupTableView()
     }
@@ -57,7 +57,7 @@ final class FilterViewController: UIViewController {
         
         navigationController?.navigationBar.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.label
         ]
     }
     
@@ -68,7 +68,7 @@ final class FilterViewController: UIViewController {
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
         
-        tableView.backgroundColor = .systemGray6
+        tableView.backgroundColor = Colors.tableBackgroundColor
         tableView.layer.cornerRadius = 16
         tableView.layer.masksToBounds = true
         
@@ -101,8 +101,8 @@ extension FilterViewController: UITableViewDataSource, UITableViewDelegate {
         
         cell.textLabel?.text = filter.title
         cell.textLabel?.font = .systemFont(ofSize: 17)
-        cell.textLabel?.textColor = .black
-        cell.backgroundColor = .systemGray6
+        cell.textLabel?.textColor = .label
+        cell.backgroundColor = Colors.tableBackgroundColor
         cell.selectionStyle = .none
         
         if filter == selectedFilter && filter != .allTrackers && filter != .trackersForToday {
