@@ -420,11 +420,17 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
         visibleCategories.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
         return visibleCategories[section].trackers.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: cellIdentifier,
             for: indexPath
@@ -455,7 +461,11 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath)
+    -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader,
               let header = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
@@ -472,7 +482,10 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
         return header
     }
     
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+        point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else {
             return nil
         }
@@ -512,7 +525,7 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
                         self.reloadCategoriesFromStore()
                         self.updateVisibleCategories()
                     } catch {
-                        assertionFailure("Failed to update tracker: \(error)")
+                        print("Failed to update tracker: \(error)")
                     }
                 }
                 

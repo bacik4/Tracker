@@ -91,7 +91,7 @@ final class FilterViewController: UIViewController {
 
 extension FilterViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filterOptions.count
+        filterOptions.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -115,7 +115,7 @@ extension FilterViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
-    func  tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let filter = filterOptions[indexPath.row]
         
         selectedFilter = filter

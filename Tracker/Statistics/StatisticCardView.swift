@@ -6,8 +6,6 @@ final class StatisticCardView: UIView {
     private let titleLabel = UILabel()
     private let gradientLayer = CAGradientLayer()
     
-    
-    
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [valueLabel, titleLabel])
         stackView.axis = .vertical

@@ -22,7 +22,7 @@
 // MARK: - TabBarController.swift
 
 "TabBarItem1.title" = "Trackers";
-"TabBarItem2.title" = "Statistic";
+"TabBarItem2.title" = "Statistics";
 
 // MARK: - StatisticsViewController
 
@@ -35,8 +35,8 @@
 
 // MARK: - OnBoarding.swift
 
-"onboardingText1" = "Track only what you really want";
-"onboardingText2" = "Even if it's not liters of water and yoga";
+"onboardingTextFirst" = "Track only what you really want";
+"onboardingTextLast" = "Even if it's not liters of water and yoga";
 "onboardingButton.title" = "That's what I call technology!";
 
 // MARK: - CategoryViewController.swift

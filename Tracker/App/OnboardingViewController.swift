@@ -8,8 +8,8 @@ import UIKit
 
 final class OnboardingViewController: UIPageViewController {
     
-    private let onboardingText1 = NSLocalizedString("onboardingText1", comment: "Text displayed on the first page")
-    private let onboardingText2 = NSLocalizedString("onboardingText2", comment: "Text displayed on the second page")
+    private let onboardingText1 = NSLocalizedString("onboardingTextFirst", comment: "Text displayed on the first page")
+    private let onboardingText2 = NSLocalizedString("onboardingTextLast", comment: "Text displayed on the second page")
     
     private lazy var pages: [UIViewController] = [
         OnboardingPageViewController(
