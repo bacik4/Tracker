@@ -28,9 +28,9 @@ final class CategoryViewController: UIViewController {
     
     private let backLabel: UILabel = {
         let label = UILabel()
-        label.text = "Привычки и события можно объединить по смыслу"
+        label.text = NSLocalizedString("backLabel.title", comment: "Text displayed when you have no category")
         label.font = .systemFont(ofSize: 12, weight: .medium)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -47,9 +47,9 @@ final class CategoryViewController: UIViewController {
     
     private var button: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Добавить категорию", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .black
+        button.setTitle(NSLocalizedString("addCategoryButton.title", comment: "Text displayed on the button"), for: .normal)
+        button.setTitleColor(Colors.TitleOnblackWhiteButtonsColor, for: .normal)
+        button.backgroundColor = Colors.blackWhiteButtonsColor
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -72,7 +72,7 @@ final class CategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.viewBackground
         setupNavBar()
         setupBack()
         setupButton()
@@ -84,12 +84,12 @@ final class CategoryViewController: UIViewController {
     // MARK: - Private Methods
     
     private func setupNavBar() {
-        title = "Категория"
+        title = NSLocalizedString("CategoryNavBar.title", comment: "Navigation bar title")
         navigationItem.largeTitleDisplayMode = .never
         
         navigationController?.navigationBar.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.label
         ]
     }
     

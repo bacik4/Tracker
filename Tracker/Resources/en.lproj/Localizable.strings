@@ -1,0 +1,85 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Игорь Глебов on 25.06.2026.
+  
+*/
+
+// MARK: - TrackersViewController.swift
+
+"emptyState.title" = "What shall we track?";
+"TrackersNavBar.title" = "Trackers";
+"searchController.title" = "Search";
+"filterButton.title" = "Filters";
+"nothingFound.title" = "Nothing found";
+"ContextEdit" = "Edit";
+"ContextDelete" = "Delete";
+"deleteTracker.alert.message" = "Уверены что хотите удалить трекер?";
+"deleteTracker.alert.delete" = "Удалить";
+"deleteTracker.alert.cancel" = "Отменить";
+
+// MARK: - TabBarController.swift
+
+"TabBarItem1.title" = "Trackers";
+"TabBarItem2.title" = "Statistics";
+
+// MARK: - StatisticsViewController
+
+"StatisticsViewController.title" = "Statistics";
+"emptyStateStatistics.title" = "There is nothing to analyze yet";
+"bestPeriod" = "Best period";
+"idealDays" = "Ideal days";
+"completedTrackers" = "Trackers completed";
+"avgValue" = "Average value";
+
+// MARK: - OnBoarding.swift
+
+"onboardingTextFirst" = "Track only what you really want";
+"onboardingTextLast" = "Even if it's not liters of water and yoga";
+"onboardingButton.title" = "That's what I call technology!";
+
+// MARK: - CategoryViewController.swift
+
+"backLabel.title" = "Habits and events can be grouped by meaning";
+"addCategoryButton.title" = "Add category";
+"CategoryNavBar.title" = "Category";
+
+// MARK: - NewCategoryViewController.swift
+
+"textField.placeholder" = "Enter category name";
+"doneButton" = "Done";
+"NewCategoryNavBar.title" = "New category";
+
+// MARK: - HabitCreationViewController.swift
+
+"HabitCreationTextField.placeholder" = "Enter tracker name";
+"cancelButton.title" = "Cancel";
+"createButton.title" = "Create";
+"emojiLabel" = "Emoji";
+"colorLabel" = "Color";
+"HabitCreationNavBar.title" = "New habit";
+"EditTrackerNavBar.title" = "Tracker edit";
+"saveButton.title" = "Save";
+"categotyCellintable.title" = "Category";
+"sheduleCellintable.title" = "Schedule";
+
+// MARK: - ScheduleViewController.swift
+
+"monday"    = "Monday";
+"tuesday"   = "Tuesday";
+"wednesday" = "Wednesday";
+"thursday"  = "Thursday";
+"friday"    = "Friday";
+"saturday"  = "Saturday";
+"sunday"    = "Sunday";
+"ScheduleViewController.doneButton" = "Done";
+"ScheduleNavBar.title" = "Schedule";
+
+// MARK: - FilterViewController.swift
+
+"FilterViewControllerNavBar.title" = "Filters";
+"allTraсkers" = "All trackers";
+"TrackersForToday" = "Trackers for today";
+"Completed" = "Completed";
+"Uncompleted" = "Not completed";

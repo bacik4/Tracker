@@ -140,6 +140,19 @@ final class TrackerRecordStore: NSObject {
         try context.save()
     }
     
+    func deleteRecords(for trackerId: UUID) throws {
+        let request: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "trackerId == %@", trackerId as CVarArg)
+        
+        let records = try context.fetch(request)
+        
+        records.forEach { record in
+            context.delete(record)
+        }
+        
+        try context.save()
+    }
+    
     func isTrackerCompleted(_ trackerId: UUID, on date: Date) throws -> Bool {
         let request: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
         
@@ -168,6 +181,82 @@ final class TrackerRecordStore: NSObject {
         
         return try context.count(for: request)
     }
+    
+    func completedTrackersCount() -> Int {
+        let request = TrackerRecordCoreData.fetchRequest()
+        
+        do {
+            return try context.count(for: request)
+        } catch {
+            print(error)
+            return 0
+        }
+    }
+    
+    func average() -> Int {
+        let totalCompletedTrackers = completedTrackersCount()
+        let uniqueDays = uniqueCompletedDates()
+        
+        if uniqueDays.isEmpty {
+            return 0
+        }
+        
+        return totalCompletedTrackers/uniqueDays.count
+    }
+    
+    private func uniqueCompletedDates() -> [Date] {
+        let request = TrackerRecordCoreData.fetchRequest()
+        
+        do {
+            let records = try context.fetch(request)
+            
+            let dates = records.compactMap { record in
+                record.date.map { Calendar.current.startOfDay(for: $0) }
+            }
+            
+            let uniqueDays = Set(dates)
+            
+            return Array(uniqueDays).sorted()
+        } catch {
+            print(error)
+            return []
+        }
+    }
+    
+    func bestPeriod() -> Int {
+        let dates = uniqueCompletedDates()
+        
+        if dates.isEmpty {
+            return 0
+        }
+        
+        var bestStreak = 1
+        var currentStreak = 1
+        
+        for index in 1..<dates.count {
+            let previousDate = dates[index - 1]
+            let currentDate = dates[index]
+            
+            guard let nextDay = Calendar.current.date(
+                byAdding: .day,
+                value: 1,
+                to: previousDate
+            ) else {
+                continue
+            }
+            
+            if Calendar.current.isDate(currentDate, inSameDayAs: nextDay) {
+                currentStreak += 1
+            } else {
+                currentStreak = 1
+            }
+            
+            bestStreak = max(bestStreak, currentStreak)
+        }
+        
+        return bestStreak
+    }
+    
     
     // MARK: - Private Methods
     

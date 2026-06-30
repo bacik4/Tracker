@@ -40,10 +40,14 @@ final class TrackerCell: UICollectionViewCell {
     }
     
     private func setupViews() {
-        contentView.backgroundColor = .white
+        backgroundColor = .clear
         
-        colorView.layer.cornerRadius = 16
-        colorView.layer.masksToBounds = true
+        contentView.backgroundColor = Colors.viewBackground
+        contentView.layer.cornerRadius = 16
+        contentView.layer.masksToBounds = true
+        
+        colorView.layer.cornerRadius = 0
+        colorView.layer.masksToBounds = false
         
         label.textColor = .white
         label.font = .systemFont(ofSize: 12, weight: .medium)
@@ -64,7 +68,7 @@ final class TrackerCell: UICollectionViewCell {
         button.layer.masksToBounds = true
         
         daysLabel.font = .systemFont(ofSize: 12, weight: .medium)
-        daysLabel.textColor = .black
+        daysLabel.textColor = .label
     }
     
     private func setupLayout() {
@@ -132,7 +136,7 @@ final class TrackerCell: UICollectionViewCell {
     }
     
     func updateCompletion(isCompleted: Bool, completedDays: Int) {
-        daysLabel.text = "\(completedDays) дней"
+        daysLabel.text = String.localizedStringWithFormat(NSLocalizedString("NumberOfDays", comment: "Days record"), completedDays)
         
         let imageName = isCompleted ? "checkmark" : "plus"
         button.setImage(UIImage(systemName: imageName), for: .normal)

@@ -1,0 +1,85 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Игорь Глебов on 25.06.2026.
+  
+*/
+
+// MARK: - TrackersViewController.swift
+
+"emptyState.title" = "Что будем отслеживать?";
+"TrackersNavBar.title" = "Трекеры";
+"searchController.title" = "Поиск";
+"filterButton.title" = "Фильтры";
+"nothingFound.title" = "Ничего не найдено";
+"ContextEdit" = "Редактировать";
+"ContextDelete" = "Удалить";
+"deleteTracker.alert.message" = "Уверены что хотите удалить трекер?";
+"deleteTracker.alert.delete" = "Удалить";
+"deleteTracker.alert.cancel" = "Отменить";
+
+// MARK: - TabBarController.swift
+
+"TabBarItem1.title" = "Трекеры";
+"TabBarItem2.title" = "Статистика";
+
+// MARK: - StatisticsViewController
+
+"StatisticsViewController.title" = "Статистика";
+"emptyStateStatistics.title" = "Анализировать пока нечего";
+"bestPeriod" = "Лучший период";
+"idealDays" = "Идеальные дни";
+"completedTrackers" = "Трекеров завершено";
+"avgValue" = "Среднее значение";
+
+// MARK: - OnBoarding.swift
+
+"onboardingText1" = "Отслеживайте только то, что хотите";
+"onboardingText2" = "Даже если это не литры воды и йога";
+"onboardingButton.title" = "Вот это технологии!";
+
+// MARK: - CategoryViewController.swift
+
+"backLabel.title"  = "Привычки и события можно объединить по смыслу";
+"addCategoryButton.title" = "Добавить категорию";
+"CategoryNavBar.title" = "Категория";
+
+// MARK: - NewCategoryViewController.swift
+
+"textField.placeholder" = "Введите название категории";
+"doneButton" = "Готово";
+"NewCategoryNavBar.title" = "Новая категория";
+
+// MARK: - HabitCreationViewController.swift
+
+"HabitCreationTextField.placeholder" = "Введите название трекера";
+"cancelButton.title" = "Отменить";
+"createButton.title" = "Создать";
+"emojiLabel" = "Emoji";
+"colorLabel" = "Цвет";
+"HabitCreationNavBar.title" = "Новая привычка";
+"EditTrackerNavBar.title" = "Редактирование привычки";
+"saveButton.title" = "Сохранить";
+"categotyCellintable.title" = "Категория";
+"sheduleCellintable.title" = "Расписание";
+
+// MARK: - ScheduleViewController.swift
+
+"monday"    = "Понедельник";
+"tuesday"   = "Вторник";
+"wednesday" = "Среда";
+"thursday"  = "Четверг";
+"friday"    = "Пятница";
+"saturday"  = "Суббота";
+"sunday"    = "Воскресенье";
+"ScheduleViewController.doneButton" = "Готово";
+"ScheduleNavBar.title" = "Расписание";
+
+// MARK: - FilterViewController.swift
+
+"FilterViewControllerNavBar.title" = "Фильтры";
+"allTraсkers" = "Все трекеры";
+"TrackersForToday" = "Трекеры на сегодня";
+"Completed" = "Завершенные";
+"Uncompleted" = "Не завершенные";

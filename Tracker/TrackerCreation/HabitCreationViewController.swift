@@ -6,14 +6,19 @@
 //
 import UIKit
 
+enum TrackerFormMode {
+    case create
+    case edit(tracker: Tracker, categoryTitle: String, completedDays: Int)
+}
+
 private enum TableItem: Int, CaseIterable {
     case category
     case schedule
     
     var title: String {
         switch self {
-        case .category: return "Категория"
-        case .schedule: return "Расписание"
+        case .category: return NSLocalizedString("categotyCellintable.title", comment: "")
+        case .schedule: return NSLocalizedString("sheduleCellintable.title", comment: "")
         }
     }
 }
@@ -22,15 +27,18 @@ final class HabitCreationViewController: UIViewController {
     // MARK: - Public Properties
     
     var onCreateTracker: ((Tracker, String) -> Void)?
+    var onUpdateTracker: ((Tracker, String) -> Void)?
+    
+    private let mode: TrackerFormMode
     
     // MARK: - Private Properties
     
     private let textField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название трекера"
+        textField.placeholder = NSLocalizedString("HabitCreationTextField.placeholder", comment: "HabitCreationTextField")
         textField.font = .systemFont(ofSize: 17)
-        textField.textColor = .black
-        textField.backgroundColor = .systemGray6
+        textField.textColor = .label
+        textField.backgroundColor = Colors.tableBackgroundColor
         textField.layer.cornerRadius = 16
         textField.layer.masksToBounds = true
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -45,7 +53,7 @@ final class HabitCreationViewController: UIViewController {
     
     private var cancelButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Отменить", for: .normal)
+        button.setTitle(NSLocalizedString("cancelButton.title", comment: "cancelButton title"), for: .normal)
         button.setTitleColor(.systemRed, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 16
@@ -57,8 +65,8 @@ final class HabitCreationViewController: UIViewController {
     
     private let createButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Создать", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitle(NSLocalizedString("createButton.title", comment: "createButton title"), for: .normal)
+        button.setTitleColor(Colors.TitleOnblackWhiteButtonsColor, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.backgroundColor = .systemGray
         button.layer.cornerRadius = 16
@@ -101,7 +109,7 @@ final class HabitCreationViewController: UIViewController {
     
     private let emojiLabel: UILabel = {
         let label = UILabel()
-        label.text = "Emoji"
+        label.text = NSLocalizedString("emojiLabel", comment: "emojiLabel text")
         label.font = .systemFont(ofSize: 19, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -109,9 +117,19 @@ final class HabitCreationViewController: UIViewController {
     
     private let colorLabel: UILabel = {
         let label = UILabel()
-        label.text = "Цвет"
+        label.text = NSLocalizedString("colorLabel", comment: "colorLabel text")
         label.font = .systemFont(ofSize: 19, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let completedDaysLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.textColor = .label
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true
         return label
     }()
     
@@ -170,32 +188,48 @@ final class HabitCreationViewController: UIViewController {
     
     // MARK: - Lifecycle
     
+    init(mode: TrackerFormMode = .create) {
+        self.mode = mode
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.viewBackground
         
         setupNavBar()
         setupButtons()
         setupScrollView()
+        setupCompletedDaysLabel()
         setupTextField()
         setupTableView()
         setupEmojiLabel()
         setupEmojiColletion()
         setupColorLabel()
         setupColorCollection()
+        configureForMode()
     }
     
     // MARK: - Private Methods
     
     private func setupNavBar() {
-        title = "Новая привычка"
+        switch mode {
+        case .create:
+            title = NSLocalizedString("HabitCreationNavBar.title", comment: "HabitCreationNavBar title")
+        case .edit:
+            title = NSLocalizedString("EditTrackerNavBar.title", comment: "EditTrackerNavBar title")
+        }
         
         navigationItem.largeTitleDisplayMode = .never
         
         navigationController?.navigationBar.titleTextAttributes = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.label
         ]
         
     }
@@ -209,8 +243,20 @@ final class HabitCreationViewController: UIViewController {
             for: .editingChanged
         )
         
+        let topAnchor: NSLayoutYAxisAnchor
+        let topConstant: CGFloat
+        
+        switch mode {
+        case .create:
+            topAnchor = contentView.topAnchor
+            topConstant = 24
+        case .edit:
+            topAnchor = completedDaysLabel.bottomAnchor
+            topConstant = 40
+        }
+        
         NSLayoutConstraint.activate([
-            textField.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
+            textField.topAnchor.constraint(equalTo: topAnchor, constant: topConstant),
             textField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             textField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             textField.heightAnchor.constraint(equalToConstant: 75)
@@ -222,7 +268,7 @@ final class HabitCreationViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         
-        tableView.backgroundColor = .systemGray6
+        tableView.backgroundColor = Colors.tableBackgroundColor
         tableView.layer.cornerRadius = 16
         tableView.layer.masksToBounds = true
         
@@ -315,7 +361,6 @@ final class HabitCreationViewController: UIViewController {
         NSLayoutConstraint.activate([
             colorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
             colorLabel.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 16),
-            colorLabel.widthAnchor.constraint(equalToConstant: 48),
         ])
     }
     
@@ -358,6 +403,46 @@ final class HabitCreationViewController: UIViewController {
         ])
     }
     
+    private func setupCompletedDaysLabel() {
+        contentView.addSubview(completedDaysLabel)
+        
+        NSLayoutConstraint.activate([
+            completedDaysLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
+            completedDaysLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor)
+        ])
+    }
+    
+    private func configureForMode() {
+        switch mode {
+        case .create:
+            createButton.setTitle(NSLocalizedString("createButton.title", comment: ""), for: .normal)
+            completedDaysLabel.isHidden = true
+            
+        case let .edit(tracker, categoryTitle, completedDays):
+            createButton.setTitle(NSLocalizedString("saveButton.title", comment: ""), for: .normal)
+            
+            completedDaysLabel.isHidden = false
+            completedDaysLabel.text = String.localizedStringWithFormat(
+                NSLocalizedString("NumberOfDays", comment: ""),
+                completedDays
+            )
+            
+            textField.text = tracker.title
+            selectedSchedule = tracker.schedule
+            selectedCategory = categoryTitle
+            selectedEmoji = tracker.emoji
+            
+            selectedColor = colors.first {
+                $0.hexString() == tracker.color.hexString()
+            } ?? tracker.color
+            
+            tableView.reloadData()
+            emojiCollectionView.reloadData()
+            colorCollectionView.reloadData()
+            updateCreateButtonState()
+        }
+    }
+    
     // MARK: - Actions
     
     @objc private func didTapCancelButton() {
@@ -375,15 +460,30 @@ final class HabitCreationViewController: UIViewController {
             return
         }
         
-        let tracker = Tracker(
-            id: UUID(),
-            title: title,
-            color: selectedColor,
-            emoji: selectedEmoji,
-            schedule: selectedSchedule
-        )
+        switch mode {
+        case .create:
+            let tracker = Tracker(
+                id: UUID(),
+                title: title,
+                color: selectedColor,
+                emoji: selectedEmoji,
+                schedule: selectedSchedule
+            )
+
+            onCreateTracker?(tracker, selectedCategory)
+            
+        case let .edit(oldTracker, _, _):
+            let updatedTracker = Tracker(
+                id: oldTracker.id,
+                title: title,
+                color: selectedColor,
+                emoji: selectedEmoji,
+                schedule: selectedSchedule
+            )
+            
+            onUpdateTracker?(updatedTracker, selectedCategory)
+        }
         
-        onCreateTracker?(tracker, selectedCategory)
         dismiss(animated: true)
     }
     
@@ -396,7 +496,7 @@ final class HabitCreationViewController: UIViewController {
         let canCreate = !title.isEmpty && !selectedSchedule.isEmpty && selectedEmoji != nil && selectedColor != nil && selectedCategory != nil
         
         createButton.isEnabled = canCreate
-        createButton.backgroundColor = canCreate ? .black : .systemGray
+        createButton.backgroundColor = canCreate ? Colors.blackWhiteButtonsColor : .systemGray
     }
 }
 
@@ -416,12 +516,12 @@ extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegat
         }
         cell.textLabel?.text = item.title
         cell.textLabel?.font = .systemFont(ofSize: 17)
-        cell.textLabel?.textColor = .black
+        cell.textLabel?.textColor = .label
         
         cell.detailTextLabel?.font = .systemFont(ofSize: 17)
         cell.detailTextLabel?.textColor = .systemGray
         
-        cell.backgroundColor = .systemGray6
+        cell.backgroundColor = Colors.tableBackgroundColor
         cell.accessoryType = .disclosureIndicator
         cell.selectionStyle = .none
         
