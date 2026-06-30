@@ -167,6 +167,17 @@ final class TrackerStore: NSObject {
             .sorted { $0.title < $1.title }
     }
     
+    func trackers() throws -> [Tracker] {
+        let request: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        
+        let trackerCoreDataObjects = try context.fetch(request)
+        
+        return try trackerCoreDataObjects.map { trackerCoreData in
+            try makeTracker(from: trackerCoreData)
+            
+        }
+    }
+    
     // MARK: - Private Methods
     
     private func getOrCreateCategory(with title: String) throws -> TrackerCategoryCoreData {

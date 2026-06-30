@@ -27,6 +27,11 @@
 // MARK: - StatisticsViewController
 
 "StatisticsViewController.title" = "Статистика";
+"emptyStateStatistics.title" = "Анализировать пока нечего";
+"bestPeriod" = "Лучший период";
+"idealDays" = "Идеальные дни";
+"completedTrackers" = "Трекеров завершено";
+"avgValue" = "Среднее значение";
 
 // MARK: - OnBoarding.swift
 
@@ -56,6 +61,8 @@
 "HabitCreationNavBar.title" = "Новая привычка";
 "EditTrackerNavBar.title" = "Редактирование привычки";
 "saveButton.title" = "Сохранить";
+"categotyCellintable.title" = "Категория";
+"sheduleCellintable.title" = "Расписание";
 
 // MARK: - ScheduleViewController.swift
 

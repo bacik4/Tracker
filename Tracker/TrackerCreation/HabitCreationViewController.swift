@@ -17,8 +17,8 @@ private enum TableItem: Int, CaseIterable {
     
     var title: String {
         switch self {
-        case .category: return "Категория"
-        case .schedule: return "Расписание"
+        case .category: return NSLocalizedString("categotyCellintable.title", comment: "")
+        case .schedule: return NSLocalizedString("sheduleCellintable.title", comment: "")
         }
     }
 }
